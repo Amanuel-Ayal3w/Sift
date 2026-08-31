@@ -1,2 +1,2 @@
-# Sift
-AI-powered lead qualification SaaS — a multi-tenant agent that scores, enriches, and drafts replies to inbound leads in real time. Built with NestJS + GraphQL, FastAPI agent service, Next.js, PostgreSQL, and Redis/BullMQ.
+# Sift 
+Sift is a multi-tenant SaaS platform that uses an AI agent to qualify inbound sales leads in real time. Instead of following fixed rules, the agent reasons over each lead — enriching it with company data, scoring it against org-specific criteria, and drafting a personalized reply — before routing it to the right pipeline stage. Built with a NestJS + GraphQL API, a dedicated FastAPI agent service, async processing via BullMQ, and a Next.js dashboard with live updates.
