@@ -23,7 +23,7 @@ export function AuthVisual() {
         {/* Middle card - Enrich */}
         <div
           className="absolute top-6 left-10 w-[220px] rounded-2xl p-5 shadow-2xl"
-          style={{ backgroundColor: "#c8b8f0", transform: "rotate(2deg)" }}
+          style={{ backgroundColor: "#e8b44f", transform: "rotate(2deg)" }}
         >
           <p className="text-sm font-bold text-black">Enrich</p>
           <p className="mt-0.5 text-[11px] text-black/50">Company data added</p>

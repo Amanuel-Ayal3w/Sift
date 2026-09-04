@@ -12,7 +12,7 @@ export function TierBadge({
       className={cn(
         "rounded-full px-2 py-0.5 text-[10px] font-bold",
         tier === "HOT" && "bg-primary text-black",
-        tier === "WARM" && "bg-[#c8b8f0] text-black",
+        tier === "WARM" && "bg-[#e8b44f] text-black",
         tier === "COLD" && "bg-muted text-muted-foreground",
         className
       )}
@@ -215,7 +215,7 @@ export function DashboardPreview({ compact = false }: { compact?: boolean }) {
           </div>
 
           {/* Score + reasoning */}
-          <div className="mb-3 rounded-xl bg-[#c8b8f0]/15 p-3">
+          <div className="mb-3 rounded-xl bg-[#e8b44f]/15 p-3">
             <p className="mb-1 text-[10px] font-semibold text-foreground/80">
               Lead Score
             </p>

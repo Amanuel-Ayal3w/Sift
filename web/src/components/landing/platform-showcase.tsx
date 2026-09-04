@@ -67,7 +67,7 @@ function EnrichGrid({ fields }: { fields: [string, string][] }) {
 
 const cardLayout = {
   score: { color: "#baff39", rotation: -5, offsetX: 0, offsetY: 0 },
-  enrich: { color: "#c8b8f0", rotation: 2, offsetX: 40, offsetY: 18 },
+  enrich: { color: "#e8b44f", rotation: 2, offsetX: 40, offsetY: 18 },
   draft: { color: "#ffffff", rotation: 7, offsetX: 80, offsetY: 36 },
 } as const;
 

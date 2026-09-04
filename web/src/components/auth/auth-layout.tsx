@@ -21,7 +21,7 @@ export function AuthLayout({
       {/* Brand panel */}
       <div className="relative hidden w-[52%] overflow-hidden bg-surface-dark lg:flex lg:flex-col">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_#baff39_0%,_transparent_50%)] opacity-20" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_#c8b8f0_0%,_transparent_40%)] opacity-10" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_#e8b44f_0%,_transparent_40%)] opacity-10" />
 
         <div className="relative flex flex-1 flex-col justify-between p-12 xl:p-16">
           <Logo className="text-white [&_span]:text-white" />

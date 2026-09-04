@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 export function ContactSection() {
   return (
@@ -91,11 +92,10 @@ export function ContactSection() {
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="message">Message</Label>
-              <textarea
+              <Textarea
                 id="message"
                 rows={4}
                 placeholder="Tell us about your team..."
-                className="w-full resize-none rounded-xl border border-input bg-transparent px-3 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
               />
             </div>
             <div className="flex justify-end">
