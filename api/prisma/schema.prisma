@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum LeadTier {
+  HOT
+  WARM
+  COLD
+}
+
+enum LeadStatus {
+  NEW
+  REVIEWED
+  CONTACTED
+  ARCHIVED
+}
+
+model Organization {
+  id                    String   @id @default(cuid())
+  name                  String
+  // Freeform criteria the agent reasons over, edited as one blob on the
+  // dashboard's Criteria page.
+  qualificationCriteria String   @default("") @db.Text
+  productDescription    String   @default("") @db.Text
+  replyTone             String?
+  // Doubles as the auth for the public lead ingestion endpoint.
+  webhookToken          String   @unique @default(cuid())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  users User[]
+  leads Lead[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  // Globally unique: login takes an email with no workspace selector.
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(OWNER)
+  orgId        String
+  org          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([orgId])
+}
+
+model Lead {
+  id            String   @id @default(cuid())
+  orgId         String
+  org           Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  name          String
+  email         String
+  company       String?
+  companyDomain String?
+  jobTitle      String?
+  source        String?
+  // Original inbound inquiry, kept for audit and re-qualification.
+  message       String   @db.Text
+  score         Int
+  tier          LeadTier
+  status        LeadStatus @default(NEW)
+  reasoning     String   @db.Text
+  draftReply    String   @db.Text
+  keySignals    String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([orgId, status])
+  @@index([orgId, createdAt])
+}

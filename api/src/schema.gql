@@ -1,0 +1,101 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthPayload {
+  user: User!
+}
+
+type Channel {
+  name: String!
+  status: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type IntegrationsPayload {
+  channels: [Channel!]!
+  webhookUrl: String!
+}
+
+type Lead {
+  company: String
+  createdAt: DateTime!
+  draftReply: String!
+  email: String!
+  id: ID!
+  keySignals: [String!]!
+  name: String!
+  reasoning: String!
+  score: Int!
+  source: String
+  status: LeadStatus!
+  tier: LeadTier!
+}
+
+enum LeadStatus {
+  ARCHIVED
+  CONTACTED
+  NEW
+  REVIEWED
+}
+
+enum LeadTier {
+  COLD
+  HOT
+  WARM
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  login(input: LoginInput!): AuthPayload!
+  logout: Boolean!
+  signup(input: SignupInput!): AuthPayload!
+  updateLeadStatus(id: ID!, status: LeadStatus!): Lead!
+  updateWorkspace(input: UpdateWorkspaceInput!): Workspace!
+}
+
+type Query {
+  integrations: IntegrationsPayload!
+  lead(id: ID!): Lead!
+  leads(limit: Int! = 50, offset: Int! = 0, status: LeadStatus): [Lead!]!
+  me: User!
+  workspace: Workspace!
+}
+
+input SignupInput {
+  companyName: String!
+  email: String!
+  password: String!
+}
+
+input UpdateWorkspaceInput {
+  name: String
+  productDescription: String
+  qualificationCriteria: String
+  replyTone: String
+}
+
+type User {
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  role: String!
+}
+
+type Workspace {
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  productDescription: String!
+  qualificationCriteria: String!
+  replyTone: String
+  webhookUrl: String!
+}
