@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Star } from "lucide-react";
 import { HeroIllustration } from "@/components/graphics/hero-illustration";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,17 +7,6 @@ export function HeroSection() {
   return (
     <section className="relative overflow-hidden">
       <div className="mx-auto flex max-w-7xl flex-col items-center px-6 pt-16 pb-20 text-center lg:px-10 lg:pt-24 lg:pb-28">
-        <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 shadow-sm">
-          <div className="flex gap-0.5">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star key={i} className="size-3.5 fill-primary text-primary" />
-            ))}
-          </div>
-          <span className="text-xs font-medium text-muted-foreground sm:text-sm">
-            Trusted by 120+ B2B sales teams
-          </span>
-        </div>
-
         <h1 className="max-w-4xl text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
           An AI agent that actually qualifies your leads
         </h1>
