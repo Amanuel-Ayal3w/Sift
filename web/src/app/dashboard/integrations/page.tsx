@@ -2,23 +2,21 @@
 
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { useQuery } from "@apollo/client/react";
 import { DashboardTopbar } from "@/components/dashboard/dashboard-topbar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-
-const webhookUrl = "https://api.sift.app/webhook/acme-workspace";
-
-const channels = [
-  { name: "Inbound Form", status: "Connected" },
-  { name: "Webhook", status: "Connected" },
-  { name: "Chat Handoff", status: "Available" },
-  { name: "CRM Sync (HubSpot)", status: "Available" },
-  { name: "Slack Notifications", status: "Available" },
-];
+import {
+  INTEGRATIONS_QUERY,
+  type IntegrationsResult,
+} from "@/lib/graphql/integrations";
 
 export default function IntegrationsPage() {
   const [copied, setCopied] = useState(false);
+  const { data } = useQuery<IntegrationsResult>(INTEGRATIONS_QUERY);
+  const webhookUrl = data?.integrations.webhookUrl ?? "";
+  const channels = data?.integrations.channels ?? [];
 
   const copyWebhook = () => {
     navigator.clipboard.writeText(webhookUrl);

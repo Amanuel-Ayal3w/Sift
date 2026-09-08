@@ -2,6 +2,7 @@
 
 import { Fragment, useState } from "react";
 import { ChevronDown, MessageSquareText, Sparkles } from "lucide-react";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -14,116 +15,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TierBadge } from "@/components/dashboard/tier-badge";
-import { cn } from "@/lib/utils";
-
-type LeadStatus = "NEW" | "REVIEWED" | "CONTACTED" | "ARCHIVED";
-
-type Lead = {
-  id: string;
-  name: string;
-  email: string;
-  company: string;
-  source: string;
-  score: number;
-  tier: "HOT" | "WARM" | "COLD";
-  status: LeadStatus;
-  time: string;
-  reasoning: string;
-  draftReply: string;
-};
-
-const leads: Lead[] = [
-  {
-    id: "1",
-    name: "Sarah Chen",
-    email: "sarah@acme.io",
-    company: "Acme Corp",
-    source: "Inbound Form",
-    score: 92,
-    tier: "HOT",
-    status: "REVIEWED",
-    time: "2m ago",
-    reasoning:
-      "VP Sales at a 150 person FinTech company. Stated budget of $50k+, uses Salesforce. Matches the ICP on company size, industry, and expressed clear intent to buy within 48 hours.",
-    draftReply:
-      "Hi Sarah, thanks for reaching out about lead qualification. With a 25 person sales team, our Growth plan would be a great fit. Want me to send over a tailored proposal?",
-  },
-  {
-    id: "2",
-    name: "James Doe",
-    email: "j.doe@northwind.com",
-    company: "Northwind",
-    source: "Webhook",
-    score: 76,
-    tier: "WARM",
-    status: "NEW",
-    time: "14m ago",
-    reasoning:
-      "Came through the HubSpot integration already in a qualified deal stage. Company size and budget signals are positive, but intent signals are moderate since no direct demo request yet.",
-    draftReply:
-      "Hi James, I see Northwind came through your HubSpot integration. Your team is already in our qualified pipeline, so I've drafted a follow up based on your last conversation with Alex.",
-  },
-  {
-    id: "3",
-    name: "Elena Voss",
-    email: "elena@pinnaclesaas.com",
-    company: "Pinnacle SaaS",
-    source: "Partner Referral",
-    score: 86,
-    tier: "HOT",
-    status: "CONTACTED",
-    time: "1h ago",
-    reasoning:
-      "Referred by a Gold tier partner. VP Operations title, 80 employee SaaS company, strong industry fit. Partner referrals historically convert 3x higher than cold inbound.",
-    draftReply:
-      "Hi Elena, Globex Partners recommended we connect. Welcome to Sift! As a Gold partner referral, you'll get priority onboarding and a dedicated success manager from day one.",
-  },
-  {
-    id: "4",
-    name: "David Kim",
-    email: "david@relayhq.com",
-    company: "RelayHQ",
-    source: "Event Signup",
-    score: 78,
-    tier: "WARM",
-    status: "NEW",
-    time: "3h ago",
-    reasoning:
-      "Met at SaaStr Annual. VP Sales at a Series B company that recently raised $18M. Lead scoring was mentioned as a stated priority, matching a core use case.",
-    draftReply:
-      "Hi David, great meeting you at SaaStr! You mentioned lead scoring was a priority for RelayHQ post Series B. I've put together a quick overview of how Sift handles qualification at your scale.",
-  },
-  {
-    id: "5",
-    name: "Marcus Webb",
-    email: "marcus@initech.com",
-    company: "Initech",
-    source: "Demo Request",
-    score: 94,
-    tier: "HOT",
-    status: "REVIEWED",
-    time: "5h ago",
-    reasoning:
-      "CTO at a 320 employee company, booked a demo directly. Currently using spreadsheets for lead routing, a clear pain point Sift solves. Highest intent signal in the queue.",
-    draftReply:
-      "Hi Marcus, looking forward to your demo tomorrow at 2pm. I've prepared a walkthrough focused on lead routing for your 320 person team. Shall I include your RevOps lead on the invite?",
-  },
-  {
-    id: "6",
-    name: "Priya Patel",
-    email: "priya@brightwave.io",
-    company: "Brightwave",
-    source: "Pricing Inquiry",
-    score: 82,
-    tier: "WARM",
-    status: "ARCHIVED",
-    time: "1d ago",
-    reasoning:
-      "18 rep team evaluating pricing tiers at roughly 2,400 leads per month. Best fit is the Growth plan. Archived after initial reply went unanswered for a week.",
-    draftReply:
-      "Hi Priya, based on your ~2,400 monthly leads and 18 person team, Growth at $149/mo is the best fit. I've attached a breakdown showing projected time saved per rep.",
-  },
-];
+import { cn, formatRelativeTime } from "@/lib/utils";
+import {
+  LEADS_QUERY,
+  UPDATE_LEAD_STATUS_MUTATION,
+  type Lead,
+  type LeadsResult,
+  type LeadsVars,
+  type LeadStatus,
+  type UpdateLeadStatusResult,
+  type UpdateLeadStatusVars,
+} from "@/lib/graphql/leads";
 
 const statusStyles: Record<LeadStatus, string> = {
   NEW: "border-primary/40 text-primary",
@@ -132,8 +34,49 @@ const statusStyles: Record<LeadStatus, string> = {
   ARCHIVED: "border-border text-muted-foreground/60",
 };
 
-export function LeadsTable() {
-  const [expandedId, setExpandedId] = useState<string | null>(leads[0].id);
+function matchesSearch(lead: Lead, search: string) {
+  const needle = search.trim().toLowerCase();
+  if (!needle) return true;
+  return (
+    lead.name.toLowerCase().includes(needle) ||
+    lead.email.toLowerCase().includes(needle) ||
+    (lead.company?.toLowerCase().includes(needle) ?? false)
+  );
+}
+
+export function LeadsTable({
+  statusFilter,
+  search = "",
+}: {
+  statusFilter?: LeadStatus;
+  search?: string;
+}) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { data, loading } = useQuery<LeadsResult, LeadsVars>(LEADS_QUERY, {
+    variables: { status: statusFilter },
+  });
+  const [updateLeadStatus] = useMutation<
+    UpdateLeadStatusResult,
+    UpdateLeadStatusVars
+  >(UPDATE_LEAD_STATUS_MUTATION);
+
+  const leads = (data?.leads ?? []).filter((lead) => matchesSearch(lead, search));
+
+  if (loading && !data) {
+    return (
+      <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+        Loading leads…
+      </div>
+    );
+  }
+
+  if (leads.length === 0) {
+    return (
+      <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+        No leads yet.
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -180,10 +123,10 @@ export function LeadsTable() {
                     </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {lead.company}
+                    {lead.company ?? "—"}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {lead.source}
+                    {lead.source ?? "—"}
                   </TableCell>
                   <TableCell className="font-semibold text-foreground">
                     {lead.score}
@@ -200,7 +143,7 @@ export function LeadsTable() {
                     </Badge>
                   </TableCell>
                   <TableCell className="pr-4 text-right text-muted-foreground">
-                    {lead.time}
+                    {formatRelativeTime(lead.createdAt)}
                   </TableCell>
                 </TableRow>
                 {expanded && (
@@ -245,6 +188,12 @@ export function LeadsTable() {
                             </Button>
                             <Button
                               size="sm"
+                              disabled={lead.status === "CONTACTED"}
+                              onClick={() =>
+                                updateLeadStatus({
+                                  variables: { id: lead.id, status: "CONTACTED" },
+                                })
+                              }
                               className="bg-primary text-primary-foreground hover:bg-primary/90"
                             >
                               Send

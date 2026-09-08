@@ -1,6 +1,13 @@
-import Link from "next/link";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useMutation } from "@apollo/client/react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import {
+  LOGOUT_MUTATION,
+  type LogoutResult,
+} from "@/lib/graphql/auth";
 
 export function DashboardTopbar({
   title,
@@ -9,6 +16,15 @@ export function DashboardTopbar({
   title: string;
   description?: string;
 }) {
+  const router = useRouter();
+  const [logout, { loading }] = useMutation<LogoutResult>(LOGOUT_MUTATION);
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/login");
+    router.refresh();
+  };
+
   return (
     <header className="flex items-center justify-between border-b border-border bg-background px-6 py-4">
       <div>
@@ -19,11 +35,9 @@ export function DashboardTopbar({
       </div>
       <div className="flex items-center gap-2">
         <ThemeToggle />
-        <Button
-          variant="ghost"
-          nativeButton={false}
-          render={<Link href="/">Log out</Link>}
-        />
+        <Button variant="ghost" onClick={handleLogout} disabled={loading}>
+          Log out
+        </Button>
       </div>
     </header>
   );
