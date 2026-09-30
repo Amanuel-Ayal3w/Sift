@@ -46,21 +46,17 @@ export function PricingSection() {
   const currentPrice = orderTiers[selectedTier].price;
 
   return (
-    <section
-      id="pricing"
-      className="bg-[#0d0f0e] py-20 text-white lg:py-28"
-    >
+    <section id="pricing" className="bg-background py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="mb-16 text-center">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+          <h2 className="text-3xl font-medium tracking-tight sm:text-4xl lg:text-5xl">
             A small price for massive growth
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-white/60">
+          <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
             Start with a 30-day free trial. Scale as your pipeline grows.
           </p>
         </div>
 
-        {/* Calculator card */}
         <div className="mx-auto mb-16 max-w-3xl rounded-3xl bg-primary p-8 text-primary-foreground sm:p-10">
           <p className="text-sm font-medium opacity-80">
             Select your monthly leads
@@ -73,8 +69,8 @@ export function PricingSection() {
                 onClick={() => setSelectedTier(i)}
                 className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${
                   selectedTier === i
-                    ? "bg-black text-white"
-                    : "bg-black/10 hover:bg-black/20"
+                    ? "bg-white text-primary"
+                    : "bg-white/15 hover:bg-white/25"
                 }`}
               >
                 {tier.label}
@@ -86,7 +82,7 @@ export function PricingSection() {
               <p className="text-sm font-medium opacity-80">
                 Total monthly price
               </p>
-              <p className="text-4xl font-bold sm:text-5xl">
+              <p className="text-4xl font-medium sm:text-5xl">
                 ${currentPrice}
                 <span className="text-lg font-medium opacity-60"> /mo</span>
               </p>
@@ -95,7 +91,7 @@ export function PricingSection() {
               </p>
             </div>
             <Button
-              className="h-12 rounded-full bg-white px-8 font-semibold text-black hover:bg-white/90"
+              className="h-12 rounded-full bg-white px-8 font-semibold text-primary hover:bg-white/90"
               nativeButton={false}
               render={
                 <Link href="/signup">Start my 30 day free trial</Link>
@@ -104,22 +100,21 @@ export function PricingSection() {
           </div>
         </div>
 
-        {/* Plan cards */}
         <div className="grid gap-6 sm:grid-cols-2">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`rounded-2xl border p-8 ${
+              className={`rounded-2xl border bg-card p-8 glass ${
                 plan.highlighted
-                  ? "border-primary/30 bg-white/5"
-                  : "border-white/10 bg-white/[0.02]"
+                  ? "border-primary/30"
+                  : "border-border"
               }`}
             >
-              <h3 className="text-xl font-bold">{plan.name}</h3>
-              <p className="mt-1 text-sm text-white/50">{plan.description}</p>
-              <p className="mt-6 text-4xl font-bold">
+              <h3 className="text-xl font-medium">{plan.name}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
+              <p className="mt-6 text-4xl font-medium">
                 ${plan.price}
-                <span className="text-base font-medium text-white/50">
+                <span className="text-base font-medium text-muted-foreground">
                   /mo
                 </span>
               </p>

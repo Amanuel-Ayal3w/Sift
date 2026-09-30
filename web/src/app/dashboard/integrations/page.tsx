@@ -30,7 +30,7 @@ export default function IntegrationsPage() {
         title="Integrations"
         description="Connect the channels your leads come from"
       />
-      <main className="flex-1 space-y-6 p-6">
+      <main className="flex-1 space-y-6 px-8 pb-10 pt-4">
         <Card className="max-w-2xl border-border">
           <CardHeader>
             <CardTitle>Your webhook URL</CardTitle>
@@ -76,11 +76,10 @@ export default function IntegrationsPage() {
                   {channel.name}
                 </span>
                 <Badge
-                  variant="outline"
                   className={
                     channel.status === "Connected"
-                      ? "border-primary/40 text-primary"
-                      : "text-muted-foreground"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground"
                   }
                 >
                   {channel.status}

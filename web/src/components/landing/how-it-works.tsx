@@ -30,7 +30,7 @@ export function HowItWorks() {
           <span className="mb-4 inline-block rounded-full border border-border bg-secondary px-4 py-1.5 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
             How it works
           </span>
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          <h2 className="text-3xl font-medium tracking-tight sm:text-4xl">
             From raw lead to qualified opportunity in seconds
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
@@ -43,12 +43,12 @@ export function HowItWorks() {
           {steps.map((s) => (
             <div
               key={s.step}
-              className="group rounded-2xl border border-border bg-card p-8 transition-shadow hover:shadow-lg hover:shadow-primary/5 dark:border-white/10 dark:bg-white/[0.03]"
+              className="group rounded-2xl border border-border bg-card p-8 glass transition-shadow hover:shadow-lg hover:shadow-primary/5"
             >
-              <span className="inline-flex size-10 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
+              <span className="inline-flex size-10 items-center justify-center rounded-full bg-primary/15 text-sm font-medium text-primary">
                 {s.step}
               </span>
-              <h3 className="mt-5 text-xl font-bold">{s.title}</h3>
+              <h3 className="mt-5 text-xl font-medium">{s.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 {s.description}
               </p>

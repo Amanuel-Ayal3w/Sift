@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TierBadge } from "@/components/dashboard/tier-badge";
-import { cn, formatRelativeTime } from "@/lib/utils";
+import { cn, formatRelativeTime, initials, avatarTone } from "@/lib/utils";
 import {
   LEADS_QUERY,
   UPDATE_LEAD_STATUS_MUTATION,
@@ -28,10 +28,10 @@ import {
 } from "@/lib/graphql/leads";
 
 const statusStyles: Record<LeadStatus, string> = {
-  NEW: "border-primary/40 text-primary",
-  REVIEWED: "border-border text-foreground",
-  CONTACTED: "border-border text-muted-foreground",
-  ARCHIVED: "border-border text-muted-foreground/60",
+  NEW: "border-transparent bg-primary text-primary-foreground",
+  REVIEWED: "border-transparent bg-muted text-foreground",
+  CONTACTED: "border-transparent bg-muted text-muted-foreground",
+  ARCHIVED: "border-transparent bg-muted text-muted-foreground/70",
 };
 
 function matchesSearch(lead: Lead, search: string) {
@@ -64,7 +64,7 @@ export function LeadsTable({
 
   if (loading && !data) {
     return (
-      <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+      <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground glass">
         Loading leads…
       </div>
     );
@@ -72,24 +72,38 @@ export function LeadsTable({
 
   if (leads.length === 0) {
     return (
-      <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+      <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground glass">
         No leads yet.
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-card">
+    <div className="overflow-hidden rounded-2xl border border-border bg-card glass">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="pl-4">Lead</TableHead>
-            <TableHead>Company</TableHead>
-            <TableHead>Source</TableHead>
-            <TableHead>Score</TableHead>
-            <TableHead>Tier</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="pr-4 text-right">Time</TableHead>
+            <TableHead className="h-11 pl-5 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              Lead
+            </TableHead>
+            <TableHead className="h-11 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              Company
+            </TableHead>
+            <TableHead className="h-11 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              Source
+            </TableHead>
+            <TableHead className="h-11 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              Score
+            </TableHead>
+            <TableHead className="h-11 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              Tier
+            </TableHead>
+            <TableHead className="h-11 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              Status
+            </TableHead>
+            <TableHead className="h-11 pr-5 text-right text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              Time
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -104,14 +118,22 @@ export function LeadsTable({
                   aria-expanded={expanded}
                   className="cursor-pointer"
                 >
-                  <TableCell className="pl-4">
-                    <div className="flex items-center gap-2">
+                  <TableCell className="py-3.5 pl-5">
+                    <div className="flex items-center gap-3">
                       <ChevronDown
                         className={cn(
                           "size-3.5 shrink-0 text-muted-foreground transition-transform",
                           expanded && "rotate-180"
                         )}
                       />
+                      <span
+                        className={cn(
+                          "flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-medium",
+                          avatarTone(lead.email)
+                        )}
+                      >
+                        {initials(lead.name) || "?"}
+                      </span>
                       <div>
                         <p className="font-medium text-foreground">
                           {lead.name}
@@ -122,27 +144,24 @@ export function LeadsTable({
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="py-3.5 text-muted-foreground">
                     {lead.company ?? "—"}
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="py-3.5 text-muted-foreground">
                     {lead.source ?? "—"}
                   </TableCell>
-                  <TableCell className="font-semibold text-foreground">
+                  <TableCell className="py-3.5 text-lg font-medium tracking-tight text-foreground">
                     {lead.score ?? "—"}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="py-3.5">
                     {lead.tier ? <TierBadge tier={lead.tier} /> : "—"}
                   </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={statusStyles[lead.status]}
-                    >
+                  <TableCell className="py-3.5">
+                    <Badge className={statusStyles[lead.status]}>
                       {lead.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="pr-4 text-right text-muted-foreground">
+                  <TableCell className="py-3.5 pr-5 text-right text-xs text-muted-foreground">
                     {formatRelativeTime(lead.createdAt)}
                   </TableCell>
                 </TableRow>

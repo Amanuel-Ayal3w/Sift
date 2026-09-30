@@ -12,7 +12,7 @@ export function ContactSection() {
           <span className="mb-4 inline-block rounded-full border border-border bg-secondary px-4 py-1.5 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
             Contact
           </span>
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          <h2 className="text-3xl font-medium tracking-tight sm:text-4xl">
             Get in touch with Sift
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
@@ -117,7 +117,7 @@ export function CtaSection() {
   return (
     <section className="border-t border-border bg-background py-20 dark:border-white/10 dark:bg-transparent lg:py-28">
       <div className="mx-auto max-w-3xl px-6 text-center lg:px-10">
-        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          <h2 className="text-3xl font-medium tracking-tight sm:text-4xl">
           Ready to get started?
         </h2>
         <p className="mt-4 text-lg text-muted-foreground">

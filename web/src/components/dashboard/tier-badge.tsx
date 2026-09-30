@@ -10,9 +10,9 @@ export function TierBadge({
   return (
     <span
       className={cn(
-        "inline-flex h-5 w-fit shrink-0 items-center rounded-full px-2 text-xs font-bold",
-        tier === "HOT" && "bg-primary text-black",
-        tier === "WARM" && "bg-[#e8b44f] text-black",
+        "inline-flex h-5 w-fit shrink-0 items-center rounded-full px-2 text-[11px] font-medium",
+        tier === "HOT" && "bg-primary text-primary-foreground",
+        tier === "WARM" && "bg-[#dce8df] text-[#4c9d73]",
         tier === "COLD" && "bg-muted text-muted-foreground",
         className
       )}

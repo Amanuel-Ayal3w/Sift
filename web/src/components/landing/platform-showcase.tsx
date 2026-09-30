@@ -23,8 +23,8 @@ export type LeadChannel = {
 function ScoreBadge({ score, tier }: { score: number; tier: string }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="text-3xl font-bold text-black">{score}</span>
-      <span className="rounded-full bg-black px-3 py-1 text-xs font-bold text-primary">
+      <span className="text-3xl font-medium text-black">{score}</span>
+      <span className="rounded-full bg-[#4c9d73] px-3 py-1 text-xs font-medium text-white">
         {tier}
       </span>
     </div>
@@ -44,7 +44,7 @@ function DraftReply({
         <p className="text-xs leading-relaxed text-black/70">{message}</p>
       </div>
       <div className="flex justify-end">
-        <span className="rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-black">
+        <span className="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground">
           {cta}
         </span>
       </div>
@@ -66,8 +66,8 @@ function EnrichGrid({ fields }: { fields: [string, string][] }) {
 }
 
 const cardLayout = {
-  score: { color: "#baff39", rotation: -5, offsetX: 0, offsetY: 0 },
-  enrich: { color: "#e8b44f", rotation: 2, offsetX: 40, offsetY: 18 },
+  score: { color: "#e7efe9", rotation: -5, offsetX: 0, offsetY: 0 },
+  enrich: { color: "#dce8df", rotation: 2, offsetX: 40, offsetY: 18 },
   draft: { color: "#ffffff", rotation: 7, offsetX: 80, offsetY: 36 },
 } as const;
 
@@ -212,7 +212,7 @@ export const leadChannels: LeadChannel[] = [
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-black">Demo booked</p>
-          <span className="rounded-full bg-black px-3 py-1 text-[10px] font-bold text-primary">
+          <span className="rounded-full bg-[#4c9d73] px-3 py-1 text-[10px] font-medium text-white">
             Tomorrow 2pm
           </span>
         </div>
@@ -256,7 +256,7 @@ export const leadChannels: LeadChannel[] = [
               key={plan}
               className={cn(
                 "flex-1 rounded-lg py-2 text-center text-[10px] font-medium",
-                i === 1 ? "bg-black text-primary" : "bg-black/5 text-black/50"
+                i === 1 ? "bg-[#4c9d73] text-white" : "bg-black/5 text-black/50"
               )}
             >
               {plan}

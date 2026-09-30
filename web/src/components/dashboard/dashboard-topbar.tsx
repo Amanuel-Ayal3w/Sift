@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useMutation } from "@apollo/client/react";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   LOGOUT_MUTATION,
   type LogoutResult,
@@ -26,16 +26,23 @@ export function DashboardTopbar({
   };
 
   return (
-    <header className="flex items-center justify-between border-b border-border bg-background px-6 py-4">
+    <header className="flex items-start justify-between px-8 pt-8 pb-2">
       <div>
-        <h1 className="text-lg font-bold tracking-tight">{title}</h1>
+        <h1 className="text-[28px] font-medium tracking-tight text-foreground">
+          {title}
+        </h1>
         {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         )}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         <ThemeToggle />
-        <Button variant="ghost" onClick={handleLogout} disabled={loading}>
+        <Button
+          variant="ghost"
+          onClick={handleLogout}
+          disabled={loading}
+          className="text-muted-foreground"
+        >
           Log out
         </Button>
       </div>

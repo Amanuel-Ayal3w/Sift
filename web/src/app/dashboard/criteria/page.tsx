@@ -45,7 +45,7 @@ export default function CriteriaPage() {
         title="Qualification Criteria"
         description="Tell the agent what a good lead looks like for your team"
       />
-      <main className="flex-1 p-6">
+      <main className="flex-1 px-8 pb-10 pt-4">
         <Card className="max-w-2xl border-border">
           <CardHeader>
             <CardTitle>Criteria</CardTitle>
@@ -64,7 +64,7 @@ export default function CriteriaPage() {
                   setCriteria(e.target.value);
                   setDirty(true);
                 }}
-                className="font-mono text-xs"
+                className="text-sm"
               />
               <p className="text-xs text-muted-foreground">
                 The agent reasons over this text for every incoming lead, it

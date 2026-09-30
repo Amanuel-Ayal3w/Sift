@@ -1,24 +1,17 @@
 import Link from "next/link";
 import { HeroIllustration } from "@/components/graphics/hero-illustration";
+import { HeroCopy } from "@/components/landing/hero-copy";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden">
-      <div className="mx-auto flex max-w-7xl flex-col items-center px-6 pt-16 pb-20 text-center lg:px-10 lg:pt-24 lg:pb-28">
-        <h1 className="max-w-4xl text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-          An AI agent that actually qualifies your leads
-        </h1>
+    <section className="bg-background py-20 dark:bg-transparent lg:py-28">
+      <div className="mx-auto flex max-w-7xl flex-col items-center px-6 text-center lg:px-10">
+        <HeroCopy />
 
-        <p className="mt-6 max-w-2xl text-balance text-lg text-muted-foreground sm:text-xl">
-          Sift reasons over your criteria, enriches every inbound lead, and
-          drafts a reply, so nothing hot sits in your inbox unread.
-        </p>
-
-        {/* Store-style input combo */}
         <div className="mt-10 flex w-full max-w-xl flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="flex flex-1 items-center overflow-hidden rounded-full border border-border bg-card shadow-sm">
+          <div className="flex flex-1 items-center overflow-hidden rounded-full border border-border bg-card shadow-sm glass">
             <Input
               placeholder="yourcompany"
               className="h-12 flex-1 rounded-none border-0 bg-transparent px-5 text-base shadow-none focus-visible:ring-0"

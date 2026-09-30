@@ -43,7 +43,7 @@ export default function SettingsPage() {
         title="Settings"
         description="Manage your workspace and account"
       />
-      <main className="flex-1 p-6">
+      <main className="flex-1 px-8 pb-10 pt-4">
         <Card className="max-w-2xl border-border">
           <CardHeader>
             <CardTitle>Workspace</CardTitle>

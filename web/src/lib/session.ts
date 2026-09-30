@@ -17,27 +17,31 @@ const GRAPHQL_URL =
 
 /** Server-only: reads the httpOnly auth cookie and resolves the current session, if any. */
 export async function getSession(): Promise<Session | null> {
-  const cookieStore = await cookies();
+  try {
+    const cookieStore = await cookies();
 
-  const res = await fetch(GRAPHQL_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      cookie: cookieStore.toString(),
-    },
-    body: JSON.stringify({
-      query: `query Session { me { id email role } workspace { id name } }`,
-    }),
-    cache: "no-store",
-  });
+    const res = await fetch(GRAPHQL_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        cookie: cookieStore.toString(),
+      },
+      body: JSON.stringify({
+        query: `query Session { me { id email role } workspace { id name } }`,
+      }),
+      cache: "no-store",
+    });
 
-  const json = await res.json();
-  if (json.errors || !json.data?.me) {
+    const json = await res.json();
+    if (json.errors || !json.data?.me) {
+      return null;
+    }
+
+    return {
+      user: json.data.me,
+      workspaceName: json.data.workspace?.name ?? "",
+    };
+  } catch {
     return null;
   }
-
-  return {
-    user: json.data.me,
-    workspaceName: json.data.workspace?.name ?? "",
-  };
 }

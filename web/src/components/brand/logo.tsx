@@ -35,7 +35,7 @@ export function Logo({
     <Link href="/" className={cn("flex items-center gap-2.5", className)}>
       <LogoIcon />
       {showText && (
-        <span className="text-xl font-bold tracking-tight">Sift</span>
+        <span className="text-lg font-medium tracking-tight">Sift</span>
       )}
     </Link>
   );

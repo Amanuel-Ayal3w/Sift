@@ -5,17 +5,17 @@ export function AuthVisual() {
         {/* Back card - Score */}
         <div
           className="absolute top-0 left-0 w-[220px] rounded-2xl p-5 shadow-2xl"
-          style={{ backgroundColor: "#baff39", transform: "rotate(-4deg)" }}
+          style={{ backgroundColor: "#4c9d73", transform: "rotate(-4deg)" }}
         >
-          <p className="text-sm font-bold text-black">Score</p>
-          <p className="mt-0.5 text-[11px] text-black/50">Lead qualified</p>
+          <p className="text-sm font-medium text-white">Score</p>
+          <p className="mt-0.5 text-[11px] text-white/60">Lead qualified</p>
           <div className="mt-4 flex items-center gap-3">
-            <span className="text-3xl font-bold text-black">92</span>
-            <span className="rounded-full bg-black px-2.5 py-1 text-[10px] font-bold text-primary">
+            <span className="text-3xl font-medium text-white">92</span>
+            <span className="rounded-full bg-white/20 px-2.5 py-1 text-[10px] font-medium text-white">
               HOT
             </span>
           </div>
-          <div className="mt-4 rounded-xl bg-black/10 p-3 text-xs text-black/70">
+          <div className="mt-4 rounded-xl bg-black/10 p-3 text-xs text-white/80">
             VP Sales · $50k budget · 25-person team
           </div>
         </div>
@@ -23,7 +23,7 @@ export function AuthVisual() {
         {/* Middle card - Enrich */}
         <div
           className="absolute top-6 left-10 w-[220px] rounded-2xl p-5 shadow-2xl"
-          style={{ backgroundColor: "#e8b44f", transform: "rotate(2deg)" }}
+          style={{ backgroundColor: "#dce8df", transform: "rotate(2deg)" }}
         >
           <p className="text-sm font-bold text-black">Enrich</p>
           <p className="mt-0.5 text-[11px] text-black/50">Company data added</p>
@@ -56,7 +56,7 @@ export function AuthVisual() {
             </p>
           </div>
           <div className="mt-3 flex justify-end">
-            <span className="rounded-full bg-[#baff39] px-3 py-1 text-[10px] font-bold text-black">
+            <span className="rounded-full bg-[#4c9d73] px-3 py-1 text-[10px] font-medium text-white">
               Send
             </span>
           </div>

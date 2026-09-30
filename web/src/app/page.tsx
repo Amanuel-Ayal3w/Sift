@@ -10,8 +10,8 @@ import { PricingSection } from "@/components/landing/pricing-section";
 
 export default function Home() {
   return (
-    <div className="relative flex flex-1 flex-col dark:bg-surface-dark">
-      <DarkGradient />
+    <div className="relative flex flex-1 flex-col bg-background dark:bg-transparent">
+      <DarkGradient subtle />
       <div className="relative z-10 flex flex-1 flex-col">
         <SiteHeader />
         <main className="flex-1">

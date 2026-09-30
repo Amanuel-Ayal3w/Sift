@@ -19,7 +19,7 @@ export function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-lg">
+    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-lg dark:border-white/10 dark:bg-black/40">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-10">
         <Logo />
 
@@ -62,7 +62,7 @@ export function SiteHeader() {
 
       <div
         className={cn(
-          "overflow-hidden border-t border-border/60 bg-background transition-all md:hidden",
+          "overflow-hidden border-t border-border/60 bg-background transition-all md:hidden dark:border-white/10 dark:bg-black/60 dark:backdrop-blur-xl",
           mobileOpen ? "max-h-80" : "max-h-0"
         )}
       >
