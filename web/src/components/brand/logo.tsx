@@ -9,14 +9,14 @@ function LogoIcon({ className }: { className?: string }) {
       className={cn("size-6", className)}
       aria-hidden
     >
-      <rect width="24" height="24" rx="6" className="fill-primary" />
+      <rect width="24" height="24" rx="6" className="fill-foreground" />
       <path
         d="M8 15V9l4-2.5L16 9v6l-4 2.5L8 15z"
-        className="fill-primary-foreground"
+        className="fill-background"
       />
       <path
         d="M12 6.5v11"
-        className="stroke-primary-foreground"
+        className="stroke-background"
         strokeWidth="1.5"
         strokeLinecap="round"
       />

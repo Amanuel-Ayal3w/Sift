@@ -19,7 +19,7 @@ export function AuthLayout({
   return (
     <div className="flex min-h-screen">
       {/* Brand panel */}
-      <div className="relative hidden w-[52%] overflow-hidden bg-black lg:flex lg:flex-col">
+      <div className="relative hidden w-[52%] overflow-hidden bg-[#171717] lg:flex lg:flex-col">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_#6ec89a_0%,_transparent_50%)] opacity-25" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_#4c9d73_0%,_transparent_40%)] opacity-15" />
 
@@ -27,7 +27,7 @@ export function AuthLayout({
           <Logo className="text-white [&_span]:text-white" />
 
           <div className="max-w-md">
-            <p className="text-sm font-semibold tracking-widest text-primary uppercase">
+            <p className="font-mono text-sm font-medium tracking-[0.16em] text-primary uppercase">
               AI lead qualification
             </p>
             <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight text-white xl:text-5xl">

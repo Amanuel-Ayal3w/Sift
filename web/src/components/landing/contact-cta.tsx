@@ -9,7 +9,7 @@ export function ContactSection() {
     <section id="contact" className="bg-background py-20 dark:bg-transparent lg:py-28">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="mb-16 text-center">
-          <span className="mb-4 inline-block rounded-full border border-border bg-secondary px-4 py-1.5 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
+          <span className="mb-4 inline-block border border-border bg-secondary px-3 py-1 font-mono text-[11px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
             Contact
           </span>
           <h2 className="text-3xl font-medium tracking-tight sm:text-4xl">
@@ -29,21 +29,21 @@ export function ContactSection() {
             </p>
 
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              <h3 className="font-mono text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                 Email
               </h3>
               <p className="mt-2 text-foreground">hello@sift.app</p>
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              <h3 className="font-mono text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                 Sales
               </h3>
               <p className="mt-2 text-foreground">sales@sift.app</p>
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              <h3 className="font-mono text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                 Office
               </h3>
               <p className="mt-2 text-foreground">
@@ -101,7 +101,7 @@ export function ContactSection() {
             <div className="flex justify-end">
               <Button
                 type="submit"
-                className="rounded-full bg-primary px-8 font-semibold text-primary-foreground hover:bg-primary/90"
+                className="rounded-lg bg-foreground px-8 font-semibold text-background hover:bg-foreground/90"
               >
                 Submit
               </Button>
@@ -115,9 +115,9 @@ export function ContactSection() {
 
 export function CtaSection() {
   return (
-    <section className="border-t border-border bg-background py-20 dark:border-white/10 dark:bg-transparent lg:py-28">
+    <section className="border-t border-border bg-background py-20 lg:py-28">
       <div className="mx-auto max-w-3xl px-6 text-center lg:px-10">
-          <h2 className="text-3xl font-medium tracking-tight sm:text-4xl">
+        <h2 className="text-3xl font-medium tracking-tight sm:text-4xl">
           Ready to get started?
         </h2>
         <p className="mt-4 text-lg text-muted-foreground">
@@ -126,7 +126,7 @@ export function CtaSection() {
         </p>
         <Button
           size="lg"
-          className="mt-8 h-12 rounded-full bg-primary px-10 text-base font-semibold text-primary-foreground hover:bg-primary/90"
+          className="mt-8 h-12 rounded-lg bg-foreground px-10 text-base font-semibold text-background hover:bg-foreground/90"
           nativeButton={false}
           render={<Link href="/signup">Sign up now!</Link>}
         />

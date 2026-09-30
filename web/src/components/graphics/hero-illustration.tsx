@@ -50,17 +50,18 @@ export function HeroIllustration() {
           <svg width="40" height="24" viewBox="0 0 40 24" aria-hidden>
             <path
               d="M0 12h32m0 0l-6-6m6 6l-6 6"
-              stroke="#4c9d73"
+              stroke="currentColor"
               strokeWidth="2"
               fill="none"
               strokeLinecap="round"
               strokeLinejoin="round"
+              className="text-foreground"
             />
           </svg>
         </div>
 
         <div className="relative w-[60%] shrink-0 overflow-x-auto">
-          <p className="mb-3 text-center text-xs font-medium text-primary sm:text-sm">
+          <p className="mb-3 text-center text-xs font-medium text-foreground sm:text-sm">
             With Sift
           </p>
           <AfterLead />

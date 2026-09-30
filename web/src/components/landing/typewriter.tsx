@@ -62,7 +62,7 @@ export function Typewriter({
       {shown}
       {showCursor && !done && (
         <span
-          className="caret ml-0.5 inline-block h-[0.85em] w-[2px] translate-y-[0.1em] bg-primary align-baseline"
+          className="caret ml-0.5 inline-block h-[0.85em] w-[2px] translate-y-[0.1em] bg-foreground align-baseline"
           aria-hidden
         />
       )}

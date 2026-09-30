@@ -206,7 +206,7 @@ export function OverviewMetrics({ leads }: { leads: Lead[] }) {
 
       <div className="rounded-2xl border border-border bg-card glass">
         <div className="px-5 py-3">
-          <p className="text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+          <p className="font-mono text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
             Quick links
           </p>
         </div>
@@ -248,7 +248,7 @@ function MetricCell({
   return (
     <div className="flex items-start justify-between gap-4 px-5 py-5">
       <div>
-        <p className="text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        <p className="font-mono text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
           {label}
         </p>
         <p className="mt-2 text-[28px] font-medium tracking-tight text-foreground">{value}</p>
@@ -291,7 +291,7 @@ function ListCard({
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card glass">
       <div className="flex items-center justify-between px-5 py-3">
-        <p className="text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        <p className="font-mono text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
           {title}
         </p>
         <Link

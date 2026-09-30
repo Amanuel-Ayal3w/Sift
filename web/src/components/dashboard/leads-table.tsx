@@ -83,25 +83,25 @@ export function LeadsTable({
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="h-11 pl-5 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+            <TableHead className="h-11 pl-5 font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
               Lead
             </TableHead>
-            <TableHead className="h-11 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+            <TableHead className="h-11 font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
               Company
             </TableHead>
-            <TableHead className="h-11 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+            <TableHead className="h-11 font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
               Source
             </TableHead>
-            <TableHead className="h-11 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+            <TableHead className="h-11 font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
               Score
             </TableHead>
-            <TableHead className="h-11 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+            <TableHead className="h-11 font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
               Tier
             </TableHead>
-            <TableHead className="h-11 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+            <TableHead className="h-11 font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
               Status
             </TableHead>
-            <TableHead className="h-11 pr-5 text-right text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+            <TableHead className="h-11 pr-5 text-right font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
               Time
             </TableHead>
           </TableRow>
@@ -180,7 +180,7 @@ export function LeadsTable({
                             <Sparkles className="size-3.5 text-primary" />
                           </span>
                           <div>
-                            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            <p className="mb-1 font-mono text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                               Agent reasoning
                             </p>
                             <p className="text-sm leading-relaxed text-foreground">
@@ -194,7 +194,7 @@ export function LeadsTable({
                         <div className="rounded-xl border border-border bg-card p-4">
                           <div className="mb-2 flex items-center gap-2">
                             <MessageSquareText className="size-3.5 text-muted-foreground" />
-                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            <p className="font-mono text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                               Draft reply
                             </p>
                           </div>

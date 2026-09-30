@@ -11,7 +11,7 @@ const footerLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border bg-background dark:border-white/10 dark:bg-black/40 dark:backdrop-blur-xl">
+    <footer className="border-t border-border bg-background dark:bg-[#141414]">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-12 lg:px-10">
         <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
           <Logo />

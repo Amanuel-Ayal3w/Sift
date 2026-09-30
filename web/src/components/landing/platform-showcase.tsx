@@ -24,7 +24,7 @@ function ScoreBadge({ score, tier }: { score: number; tier: string }) {
   return (
     <div className="flex items-center gap-3">
       <span className="text-3xl font-medium text-black">{score}</span>
-      <span className="rounded-full bg-[#4c9d73] px-3 py-1 text-xs font-medium text-white">
+      <span className="rounded-full bg-black px-3 py-1 text-xs font-medium text-white">
         {tier}
       </span>
     </div>
@@ -44,7 +44,7 @@ function DraftReply({
         <p className="text-xs leading-relaxed text-black/70">{message}</p>
       </div>
       <div className="flex justify-end">
-        <span className="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground">
+        <span className="rounded-full bg-black px-4 py-1.5 text-xs font-medium text-white">
           {cta}
         </span>
       </div>
@@ -66,8 +66,8 @@ function EnrichGrid({ fields }: { fields: [string, string][] }) {
 }
 
 const cardLayout = {
-  score: { color: "#e7efe9", rotation: -5, offsetX: 0, offsetY: 0 },
-  enrich: { color: "#dce8df", rotation: 2, offsetX: 40, offsetY: 18 },
+  score: { color: "#f4f4f4", rotation: -5, offsetX: 0, offsetY: 0 },
+  enrich: { color: "#e8e8e8", rotation: 2, offsetX: 40, offsetY: 18 },
   draft: { color: "#ffffff", rotation: 7, offsetX: 80, offsetY: 36 },
 } as const;
 
@@ -212,7 +212,7 @@ export const leadChannels: LeadChannel[] = [
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-black">Demo booked</p>
-          <span className="rounded-full bg-[#4c9d73] px-3 py-1 text-[10px] font-medium text-white">
+          <span className="rounded-full bg-black px-3 py-1 text-[10px] font-medium text-white">
             Tomorrow 2pm
           </span>
         </div>
@@ -256,7 +256,7 @@ export const leadChannels: LeadChannel[] = [
               key={plan}
               className={cn(
                 "flex-1 rounded-lg py-2 text-center text-[10px] font-medium",
-                i === 1 ? "bg-[#4c9d73] text-white" : "bg-black/5 text-black/50"
+                i === 1 ? "bg-black text-white" : "bg-black/5 text-black/50"
               )}
             >
               {plan}
@@ -453,15 +453,18 @@ function ProductCard({
 export function PlatformShowcase() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [progressKey, setProgressKey] = useState(0);
 
   const selectChannel = useCallback((index: number) => {
     setActiveIndex(index);
+    setProgressKey((key) => key + 1);
   }, []);
 
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % leadChannels.length);
+      setProgressKey((key) => key + 1);
     }, 5000);
     return () => clearInterval(timer);
   }, [isPaused]);
@@ -470,36 +473,62 @@ export function PlatformShowcase() {
 
   return (
     <div
-      className="grid items-start gap-12 lg:grid-cols-2"
+      className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="flex flex-col gap-1">
-        {leadChannels.map((channel, i) => (
-          <button
-            key={channel.id}
-            type="button"
-            onClick={() => selectChannel(i)}
-            className={cn(
-              "rounded-xl px-4 py-2 text-left transition-colors duration-200",
-              i === activeIndex
-                ? "bg-primary/15 text-foreground"
-                : "text-muted-foreground hover:bg-[#f0f0ec] hover:text-foreground dark:hover:bg-white/[0.04]"
-            )}
-          >
-            <span className="flex items-center justify-between">
-              <span className="text-sm font-medium">{channel.label}</span>
-              {i === activeIndex && (
-                <span className="size-1.5 rounded-full bg-primary" />
-              )}
-            </span>
-            {i === activeIndex && (
-              <p className="mt-1.5 max-w-[36ch] text-xs leading-relaxed text-muted-foreground">
-                {channel.description}
-              </p>
-            )}
-          </button>
-        ))}
+      <div className="flex flex-col justify-center">
+        <p className="font-mono text-[11px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
+          Channel {String(activeIndex + 1).padStart(2, "0")} /{" "}
+          {String(leadChannels.length).padStart(2, "0")}
+        </p>
+
+        <div className="mt-4 min-h-[120px]">
+          <h3 className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
+            {activeChannel.label}
+          </h3>
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
+            {activeChannel.description}
+          </p>
+        </div>
+
+        <div className="mt-6 h-0.5 w-full max-w-md overflow-hidden rounded-full bg-muted">
+          <div
+            key={progressKey}
+            className="h-full origin-left rounded-full bg-foreground"
+            style={{
+              animation: "platform-progress 5s linear forwards",
+              animationPlayState: isPaused ? "paused" : "running",
+            }}
+          />
+        </div>
+
+        <div
+          role="tablist"
+          aria-label="Lead channels"
+          className="mt-8 flex flex-wrap gap-2"
+        >
+          {leadChannels.map((channel, i) => {
+            const isActive = i === activeIndex;
+            return (
+              <button
+                key={channel.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => selectChannel(i)}
+                className={cn(
+                  "rounded-full px-3.5 py-1.5 text-sm transition-all duration-200",
+                  isActive
+                    ? "bg-foreground text-background shadow-sm"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                )}
+              >
+                {channel.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="relative flex min-h-[460px] w-full items-center justify-center sm:min-h-[520px] lg:min-h-[560px]">

@@ -44,7 +44,7 @@ export function DashboardSidebar({ workspaceName }: { workspaceName: string }) {
       </div>
 
       <div className="px-5 pt-4 pb-3">
-        <p className="text-[10px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
+        <p className="font-mono text-[10px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
           Workspace
         </p>
         <p className="mt-1 truncate text-sm font-medium text-foreground">

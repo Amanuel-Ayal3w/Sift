@@ -6,23 +6,23 @@ import { Input } from "@/components/ui/input";
 
 export function HeroSection() {
   return (
-    <section className="bg-background py-20 dark:bg-transparent lg:py-28">
+    <section className="bg-transparent py-20 lg:py-28">
       <div className="mx-auto flex max-w-7xl flex-col items-center px-6 text-center lg:px-10">
         <HeroCopy />
 
         <div className="mt-10 flex w-full max-w-xl flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="flex flex-1 items-center overflow-hidden rounded-full border border-border bg-card shadow-sm glass">
+          <div className="flex flex-1 items-center overflow-hidden rounded-lg border border-border bg-background/80 shadow-none backdrop-blur-sm">
             <Input
               placeholder="yourcompany"
               className="h-12 flex-1 rounded-none border-0 bg-transparent px-5 text-base shadow-none focus-visible:ring-0"
             />
-            <span className="hidden shrink-0 pr-2 text-sm text-muted-foreground sm:inline">
+            <span className="hidden shrink-0 pr-3 font-mono text-sm text-muted-foreground sm:inline">
               .sift.app
             </span>
           </div>
           <Button
             size="lg"
-            className="h-12 rounded-full bg-primary px-8 text-base font-semibold text-primary-foreground hover:bg-primary/90"
+            className="h-12 rounded-lg bg-foreground px-8 text-base font-semibold text-background hover:bg-foreground/90"
             nativeButton={false}
             render={<Link href="/signup">Get started for free!</Link>}
           />

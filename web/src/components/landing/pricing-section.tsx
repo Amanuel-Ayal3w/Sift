@@ -57,20 +57,20 @@ export function PricingSection() {
           </p>
         </div>
 
-        <div className="mx-auto mb-16 max-w-3xl rounded-3xl bg-primary p-8 text-primary-foreground sm:p-10">
+        <div className="mx-auto mb-16 max-w-3xl border border-foreground bg-foreground p-8 text-background sm:p-10">
           <p className="text-sm font-medium opacity-80">
             Select your monthly leads
           </p>
-          <div className="mt-4 flex flex-wrap gap-3">
+          <div className="mt-4 flex flex-wrap gap-2">
             {orderTiers.map((tier, i) => (
               <button
                 key={tier.value}
                 type="button"
                 onClick={() => setSelectedTier(i)}
-                className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${
+                className={`px-5 py-2 text-sm font-semibold transition-all ${
                   selectedTier === i
-                    ? "bg-white text-primary"
-                    : "bg-white/15 hover:bg-white/25"
+                    ? "bg-background text-foreground"
+                    : "border border-background/25 bg-transparent hover:bg-background/10"
                 }`}
               >
                 {tier.label}
@@ -82,7 +82,7 @@ export function PricingSection() {
               <p className="text-sm font-medium opacity-80">
                 Total monthly price
               </p>
-              <p className="text-4xl font-medium sm:text-5xl">
+              <p className="text-4xl font-semibold tracking-tight sm:text-5xl">
                 ${currentPrice}
                 <span className="text-lg font-medium opacity-60"> /mo</span>
               </p>
@@ -91,7 +91,7 @@ export function PricingSection() {
               </p>
             </div>
             <Button
-              className="h-12 rounded-full bg-white px-8 font-semibold text-primary hover:bg-white/90"
+              className="h-12 rounded-lg bg-background px-8 font-semibold text-foreground hover:bg-background/90"
               nativeButton={false}
               render={
                 <Link href="/signup">Start my 30 day free trial</Link>
@@ -100,19 +100,17 @@ export function PricingSection() {
           </div>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-px border border-border bg-border sm:grid-cols-2">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`rounded-2xl border bg-card p-8 glass ${
-                plan.highlighted
-                  ? "border-primary/30"
-                  : "border-border"
+              className={`bg-background p-8 ${
+                plan.highlighted ? "ring-1 ring-inset ring-foreground/30" : ""
               }`}
             >
-              <h3 className="text-xl font-medium">{plan.name}</h3>
+              <h3 className="text-xl font-semibold tracking-tight">{plan.name}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
-              <p className="mt-6 text-4xl font-medium">
+              <p className="mt-6 text-4xl font-semibold tracking-tight">
                 ${plan.price}
                 <span className="text-base font-medium text-muted-foreground">
                   /mo
@@ -121,13 +119,13 @@ export function PricingSection() {
               <ul className="mt-8 flex flex-col gap-3">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-center gap-3 text-sm">
-                    <Check className="size-4 shrink-0 text-primary" />
+                    <Check className="size-4 shrink-0 text-foreground" />
                     {feature}
                   </li>
                 ))}
               </ul>
               <Button
-                className="mt-8 w-full rounded-full bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
+                className="mt-8 w-full rounded-lg bg-foreground font-semibold text-background hover:bg-foreground/90"
                 nativeButton={false}
                 render={<Link href="/signup">Get started</Link>}
               />

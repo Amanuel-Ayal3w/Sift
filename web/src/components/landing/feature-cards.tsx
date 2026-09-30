@@ -22,7 +22,7 @@ const features = [
 function BulletItem({ children }: { children: React.ReactNode }) {
   return (
     <li className="flex gap-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-      <span className="mt-1 shrink-0 font-medium text-primary" aria-hidden>
+      <span className="mt-1 shrink-0 font-medium text-foreground" aria-hidden>
         *
       </span>
       <span>{children}</span>
@@ -37,7 +37,7 @@ export function FeatureCards() {
         {features.map((feature) => (
           <div
             key={feature.title}
-            className="grid items-center gap-8 rounded-3xl border border-border bg-card p-8 glass lg:grid-cols-[1fr_auto_1fr] lg:gap-10 lg:p-16"
+            className="grid items-center gap-8 rounded-xl border border-border bg-background p-8 lg:grid-cols-[1fr_auto_1fr] lg:gap-10 lg:p-16"
           >
             <h2 className="text-2xl font-medium leading-tight text-foreground sm:text-3xl lg:text-4xl">
               {feature.title}
