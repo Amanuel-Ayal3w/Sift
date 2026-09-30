@@ -11,6 +11,7 @@ import {
 import { Throttle } from '@nestjs/throttler';
 import { Queue } from 'bullmq';
 import { Public } from '../auth/decorators/public.decorator.js';
+import { LeadsPubSub } from '../leads/leads.pubsub.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { LEAD_QUALIFICATION_QUEUE } from '../queue/queue.constants.js';
 import type { LeadQualificationJobData } from '../queue/types/lead-qualification-job.type.js';
@@ -20,6 +21,7 @@ import { IngestLeadDto } from './dto/ingest-lead.dto.js';
 export class WebhooksController {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly leadsPubSub: LeadsPubSub,
     @InjectQueue(LEAD_QUALIFICATION_QUEUE)
     private readonly queue: Queue<LeadQualificationJobData>,
   ) {}
@@ -36,7 +38,7 @@ export class WebhooksController {
   async ingest(
     @Param('token') token: string,
     @Body() body: IngestLeadDto,
-  ): Promise<{ status: string }> {
+  ): Promise<{ status: string; leadId: string }> {
     const org = await this.prisma.organization.findUnique({
       where: { webhookToken: token },
       select: { id: true },
@@ -45,7 +47,26 @@ export class WebhooksController {
       throw new NotFoundException('Unknown webhook token');
     }
 
-    await this.queue.add('qualify', { orgId: org.id, lead: body });
-    return { status: 'queued' };
+    const lead = await this.prisma.lead.create({
+      data: {
+        orgId: org.id,
+        name: body.fullName,
+        email: body.email,
+        company: body.companyName ?? null,
+        companyDomain: body.companyDomain ?? null,
+        jobTitle: body.jobTitle ?? null,
+        source: body.source ?? null,
+        message: body.message,
+        status: 'NEW',
+      },
+    });
+
+    await this.leadsPubSub.publishLead(lead);
+    await this.queue.add('qualify', {
+      orgId: org.id,
+      leadId: lead.id,
+      lead: body,
+    });
+    return { status: 'queued', leadId: lead.id };
   }
 }

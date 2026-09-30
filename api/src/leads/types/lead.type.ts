@@ -21,20 +21,20 @@ export class Lead {
   @Field(() => String, { nullable: true })
   source: string | null;
 
-  @Field(() => Int)
-  score: number;
+  @Field(() => Int, { nullable: true })
+  score: number | null;
 
-  @Field(() => LeadTier)
-  tier: LeadTier;
+  @Field(() => LeadTier, { nullable: true })
+  tier: LeadTier | null;
 
   @Field(() => LeadStatus)
   status: LeadStatus;
 
-  @Field()
-  reasoning: string;
+  @Field(() => String, { nullable: true })
+  reasoning: string | null;
 
-  @Field()
-  draftReply: string;
+  @Field(() => String, { nullable: true })
+  draftReply: string | null;
 
   @Field(() => [String])
   keySignals: string[];

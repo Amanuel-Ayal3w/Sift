@@ -129,10 +129,10 @@ export function LeadsTable({
                     {lead.source ?? "—"}
                   </TableCell>
                   <TableCell className="font-semibold text-foreground">
-                    {lead.score}
+                    {lead.score ?? "—"}
                   </TableCell>
                   <TableCell>
-                    <TierBadge tier={lead.tier} />
+                    {lead.tier ? <TierBadge tier={lead.tier} /> : "—"}
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -165,7 +165,7 @@ export function LeadsTable({
                               Agent reasoning
                             </p>
                             <p className="text-sm leading-relaxed text-foreground">
-                              {lead.reasoning}
+                              {lead.reasoning ?? "Qualification in progress…"}
                             </p>
                           </div>
                         </div>
@@ -180,7 +180,7 @@ export function LeadsTable({
                             </p>
                           </div>
                           <p className="text-sm leading-relaxed text-foreground">
-                            {lead.draftReply}
+                            {lead.draftReply ?? "A reply will appear once the lead is scored."}
                           </p>
                           <div className="mt-4 flex justify-end gap-2">
                             <Button variant="outline" size="sm">

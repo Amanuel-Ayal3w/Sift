@@ -1,13 +1,18 @@
-import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Int, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
+import type { Lead as PrismaLead } from '@prisma/client';
 import { LeadStatus } from '@prisma/client';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../auth/types/jwt-payload.type.js';
+import { LeadsPubSub } from './leads.pubsub.js';
 import { LeadsService } from './leads.service.js';
 import { Lead } from './types/lead.type.js';
 
 @Resolver(() => Lead)
 export class LeadsResolver {
-  constructor(private readonly leadsService: LeadsService) {}
+  constructor(
+    private readonly leadsService: LeadsService,
+    private readonly leadsPubSub: LeadsPubSub,
+  ) {}
 
   @Query(() => [Lead])
   leads(
@@ -39,5 +44,16 @@ export class LeadsResolver {
     @Args('status', { type: () => LeadStatus }) status: LeadStatus,
   ): Promise<Lead> {
     return this.leadsService.updateStatus(current.orgId, id, status);
+  }
+
+  @Subscription(() => Lead, {
+    filter: (
+      payload: { leadUpdated: PrismaLead },
+      _variables: unknown,
+      context: { req?: { user?: AuthenticatedUser } },
+    ) => payload.leadUpdated.orgId === context.req?.user?.orgId,
+  })
+  leadUpdated() {
+    return this.leadsPubSub.asyncIterator();
   }
 }

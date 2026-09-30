@@ -9,11 +9,11 @@ Actively in development; tracked phase-by-phase in Linear (team `Sift`). Rough s
 | Area | State |
 |---|---|
 | Auth, multi-tenant data model, GraphQL API | Built and verified end-to-end, including tenant isolation between orgs |
-| Lead ingestion → BullMQ → agent qualification → persisted result | Built and verified, including retry/backoff and a no-data-loss fallback when the agent service is unavailable |
-| Agent service scoring + draft reply (OpenAI) | Built; verified against a stub, not yet against a live OpenAI call |
-| Company enrichment | Not built — `agent-service` has no enrichment step yet |
-| Real-time dashboard updates (GraphQL subscriptions) | Not built — `leads`/`updateLeadStatus` exist, no `leadUpdated` subscription yet |
-| Web dashboard UI | UI shell exists (leads table, criteria, settings, integrations) but is 100% static mock data — not wired to the API yet |
+| Lead ingestion → persist NEW → BullMQ → agent qualification → REVIEWED | Built — webhook saves the row immediately, then the worker scores it |
+| Agent service scoring + draft reply (OpenAI) | Built, including optional Clearbit enrichment (skipped if no key / lookup fails) |
+| Company enrichment | Built — Clearbit by company domain, or email host if domain is missing |
+| Real-time dashboard updates (GraphQL subscriptions) | Built — `leadUpdated` over `graphql-ws` |
+| Web dashboard UI | Wired to NestJS GraphQL (queries, mutations, live lead updates) |
 | Public demo path, deployment, portfolio packaging | Not started |
 
 ## Architecture
@@ -26,7 +26,7 @@ agent-service/  FastAPI — POST /leads/qualify, scores a lead against an
                 org's criteria and drafts a reply (OpenAI)
 ```
 
-Flow: an inbound lead is POSTed to a per-workspace webhook URL on `api` → validated and queued (responds `202` immediately) → a BullMQ worker loads the workspace's criteria, calls `agent-service`, and stores the scored/tiered lead → the dashboard reads it via GraphQL.
+Flow: an inbound lead is POSTed to a per-workspace webhook URL on `api` → validated and saved as `NEW` (responds `202` immediately) → a BullMQ worker loads the workspace's criteria, calls `agent-service`, updates the lead to `REVIEWED`, and publishes `leadUpdated` → the dashboard reads it via GraphQL and stays live over a WebSocket subscription.
 
 ## Getting started
 
@@ -85,7 +85,7 @@ npm install
 npm run dev
 ```
 
-Dashboard at `http://localhost:3000` — currently static/mock data, not yet wired to `api`.
+Dashboard at `http://localhost:3000` — sign in and the inbox is live against `api`.
 
 ## Repo layout
 

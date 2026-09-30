@@ -10,6 +10,7 @@ export interface IngestedLead {
 
 export interface LeadQualificationJobData {
   orgId: string;
+  leadId: string;
   lead: IngestedLead;
 }
 

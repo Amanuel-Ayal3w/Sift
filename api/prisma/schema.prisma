@@ -69,12 +69,13 @@ model Lead {
   source        String?
   // Original inbound inquiry, kept for audit and re-qualification.
   message       String   @db.Text
-  score         Int
-  tier          LeadTier
+  // Null until the worker finishes qualification (or records a fallback).
+  score         Int?
+  tier          LeadTier?
   status        LeadStatus @default(NEW)
-  reasoning     String   @db.Text
-  draftReply    String   @db.Text
-  keySignals    String[]
+  reasoning     String?  @db.Text
+  draftReply    String?  @db.Text
+  keySignals    String[] @default([])
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

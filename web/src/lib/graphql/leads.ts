@@ -27,6 +27,24 @@ export const UPDATE_LEAD_STATUS_MUTATION = gql`
   }
 `;
 
+export const LEAD_UPDATED_SUBSCRIPTION = gql`
+  subscription LeadUpdated {
+    leadUpdated {
+      id
+      name
+      email
+      company
+      source
+      score
+      tier
+      status
+      reasoning
+      draftReply
+      createdAt
+    }
+  }
+`;
+
 export type LeadStatus = "NEW" | "REVIEWED" | "CONTACTED" | "ARCHIVED";
 export type LeadTier = "HOT" | "WARM" | "COLD";
 
@@ -36,11 +54,11 @@ export type Lead = {
   email: string;
   company: string | null;
   source: string | null;
-  score: number;
-  tier: LeadTier;
+  score: number | null;
+  tier: LeadTier | null;
   status: LeadStatus;
-  reasoning: string;
-  draftReply: string;
+  reasoning: string | null;
+  draftReply: string | null;
   createdAt: string;
 };
 
@@ -55,3 +73,5 @@ export type UpdateLeadStatusResult = {
   updateLeadStatus: { id: string; status: LeadStatus };
 };
 export type UpdateLeadStatusVars = { id: string; status: LeadStatus };
+
+export type LeadUpdatedResult = { leadUpdated: Lead };
