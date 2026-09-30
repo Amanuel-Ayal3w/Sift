@@ -45,3 +45,6 @@ agent-service/.venv/
 # misc
 .DS_Store
 *.pem
+
+# editor / agent
+.cursor/
