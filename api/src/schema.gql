@@ -70,14 +70,14 @@ type Query {
   workspace: Workspace!
 }
 
-type Subscription {
-  leadUpdated: Lead!
-}
-
 input SignupInput {
   companyName: String!
   email: String!
   password: String!
+}
+
+type Subscription {
+  leadUpdated: Lead!
 }
 
 input UpdateWorkspaceInput {
