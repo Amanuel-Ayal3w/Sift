@@ -21,6 +21,9 @@ export class Lead {
   @Field(() => String, { nullable: true })
   source: string | null;
 
+  @Field()
+  message: string;
+
   @Field(() => Int, { nullable: true })
   score: number | null;
 

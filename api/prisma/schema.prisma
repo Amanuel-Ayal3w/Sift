@@ -36,6 +36,10 @@ model Organization {
   replyTone             String?
   // Doubles as the auth for the public lead ingestion endpoint.
   webhookToken          String   @unique @default(cuid())
+  // Mailbox that receives leads and sends the scored reply. App password is
+  // write-only from the dashboard and is never returned by GraphQL.
+  gmailUser             String?
+  gmailAppPassword      String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 

@@ -146,6 +146,20 @@ curl -X POST "$WEBHOOK_URL" \
 
 The landing page **Try it** form and the contact form use the same webhook when `DEMO_WEBHOOK_URL` is set.
 
+### Email inbox
+
+With a Gmail app password, Sift can take leads from mail that mailbox receives and send the draft reply back to the sender.
+
+In `api/.env`:
+
+```bash
+GMAIL_USER=you@gmail.com
+GMAIL_APP_PASSWORD=your-app-password
+INBOUND_EMAIL_TOKEN=the-token-from-Integrations
+```
+
+Create the app password under Google Account → Security → App passwords. Restart `make dev`. Unread mail in that inbox becomes a lead (and is marked read). After scoring, the draft is emailed to the sender and the lead is marked contacted. Website and webhook leads are emailed too, once Gmail is configured. Until those values are set, replies stay on the dashboard only.
+
 ## Deploy
 
 Production hosts: Neon (Postgres), Render (API, agent, Redis), Vercel (web). Blueprint: [`render.yaml`](render.yaml).

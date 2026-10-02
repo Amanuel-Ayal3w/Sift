@@ -8,12 +8,22 @@ export const LEADS_QUERY = gql`
       email
       company
       source
+      message
       score
       tier
       status
       reasoning
       draftReply
       createdAt
+    }
+  }
+`;
+
+export const SEND_LEAD_REPLY_MUTATION = gql`
+  mutation SendLeadReply($id: ID!) {
+    sendLeadReply(id: $id) {
+      id
+      status
     }
   }
 `;
@@ -35,6 +45,7 @@ export const LEAD_UPDATED_SUBSCRIPTION = gql`
       email
       company
       source
+      message
       score
       tier
       status
@@ -54,6 +65,7 @@ export type Lead = {
   email: string;
   company: string | null;
   source: string | null;
+  message: string;
   score: number | null;
   tier: LeadTier | null;
   status: LeadStatus;
@@ -68,6 +80,11 @@ export type LeadsVars = {
   limit?: number;
   offset?: number;
 };
+
+export type SendLeadReplyResult = {
+  sendLeadReply: { id: string; status: LeadStatus };
+};
+export type SendLeadReplyVars = { id: string };
 
 export type UpdateLeadStatusResult = {
   updateLeadStatus: { id: string; status: LeadStatus };

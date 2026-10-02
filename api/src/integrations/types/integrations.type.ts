@@ -16,4 +16,14 @@ export class IntegrationsPayload {
 
   @Field(() => [Channel])
   channels: Channel[];
+
+  /** Gmail address that receives leads and sends replies, when configured. */
+  @Field(() => String, { nullable: true })
+  mailboxAddress: string | null;
+
+  @Field()
+  repliesEnabled: boolean;
+
+  @Field()
+  inboxConnected: boolean;
 }

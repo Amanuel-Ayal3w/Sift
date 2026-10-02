@@ -41,7 +41,7 @@ function countsByDay(leads: Lead[], days: number) {
 
 function activityLabel(lead: Lead) {
   if (lead.status === "CONTACTED") {
-    return { title: "Outreach sent", tag: "contacted", tagClass: "text-primary" };
+    return { title: "Reply emailed", tag: "emailed", tagClass: "text-primary" };
   }
   if (lead.status === "REVIEWED" || lead.tier) {
     return { title: "Lead qualified", tag: "qualified", tagClass: "text-primary" };
@@ -146,7 +146,7 @@ export function OverviewMetrics({ leads }: { leads: Lead[] }) {
           <MiniStat
             icon={<Plug className="size-4 text-muted-foreground" />}
             value={hasData ? contacted.length : 6}
-            hint="contacted"
+            hint="emailed"
           />
           <MiniStat
             icon={<Bell className="size-4 text-muted-foreground" />}
@@ -313,6 +313,7 @@ const demoLeads: Lead[] = [
     email: "sarah@acme.io",
     company: "Acme Corp",
     source: "Inbound Form",
+    message: "Looking for a lead qualification tool for a 150 person team.",
     score: 92,
     tier: "HOT",
     status: "REVIEWED",
@@ -326,6 +327,7 @@ const demoLeads: Lead[] = [
     email: "james@northwind.io",
     company: "Northwind",
     source: "Webhook",
+    message: "Can you score inbound leads from our CRM?",
     score: 76,
     tier: "WARM",
     status: "NEW",
@@ -339,6 +341,7 @@ const demoLeads: Lead[] = [
     email: "elena@pinnacle.io",
     company: "Pinnacle SaaS",
     source: "Partner Referral",
+    message: "Referred by Northwind. Budget is approved.",
     score: 86,
     tier: "HOT",
     status: "CONTACTED",
@@ -352,6 +355,7 @@ const demoLeads: Lead[] = [
     email: "david@relayhq.io",
     company: "RelayHQ",
     source: "Event Signup",
+    message: "Met at the booth. Wants a walkthrough.",
     score: 78,
     tier: "WARM",
     status: "REVIEWED",
@@ -365,6 +369,7 @@ const demoLeads: Lead[] = [
     email: "priya@globex.io",
     company: "Globex",
     source: "Demo Request",
+    message: "Booked a demo for the sales team.",
     score: 81,
     tier: "HOT",
     status: "NEW",

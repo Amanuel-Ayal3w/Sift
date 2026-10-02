@@ -11,6 +11,11 @@ type Channel {
   status: String!
 }
 
+input ConnectGmailInput {
+  appPassword: String!
+  email: String!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -18,6 +23,9 @@ scalar DateTime
 
 type IntegrationsPayload {
   channels: [Channel!]!
+  inboxConnected: Boolean!
+  mailboxAddress: String
+  repliesEnabled: Boolean!
   webhookUrl: String!
 }
 
@@ -28,6 +36,7 @@ type Lead {
   email: String!
   id: ID!
   keySignals: [String!]!
+  message: String!
   name: String!
   reasoning: String
   score: Int
@@ -55,8 +64,10 @@ input LoginInput {
 }
 
 type Mutation {
+  connectGmail(input: ConnectGmailInput!): IntegrationsPayload!
   login(input: LoginInput!): AuthPayload!
   logout: Boolean!
+  sendLeadReply(id: ID!): Lead!
   signup(input: SignupInput!): AuthPayload!
   updateLeadStatus(id: ID!, status: LeadStatus!): Lead!
   updateWorkspace(input: UpdateWorkspaceInput!): Workspace!

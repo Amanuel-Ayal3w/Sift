@@ -8,6 +8,8 @@ import { splitCriteria } from '../criteria.util.js';
 import { deriveTier } from '../lead-tier.util.js';
 import { LEAD_QUALIFICATION_QUEUE } from '../queue.constants.js';
 import type { LeadQualificationJobData } from '../types/lead-qualification-job.type.js';
+import { replySubject } from '../../mail/inbound-mail.js';
+import { MailService } from '../../mail/mail.service.js';
 import { LeadsPubSub } from '../../leads/leads.pubsub.js';
 
 @Processor(LEAD_QUALIFICATION_QUEUE)
@@ -18,6 +20,7 @@ export class LeadQualificationProcessor extends WorkerHost {
     private readonly prisma: PrismaService,
     private readonly agent: AgentClient,
     private readonly leadsPubSub: LeadsPubSub,
+    private readonly mail: MailService,
   ) {
     super();
   }
@@ -32,6 +35,8 @@ export class LeadQualificationProcessor extends WorkerHost {
         productDescription: true,
         qualificationCriteria: true,
         replyTone: true,
+        gmailUser: true,
+        gmailAppPassword: true,
       },
     });
     if (!org) {
@@ -55,6 +60,7 @@ export class LeadQualificationProcessor extends WorkerHost {
         draftReply: result.draft_reply,
         keySignals: result.key_signals,
       });
+      await this.emailReply(leadId, org, result.draft_reply, job.data);
     } catch (error) {
       const attempts = job.opts.attempts ?? 1;
       if (job.attemptsMade + 1 < attempts) {
@@ -95,5 +101,37 @@ export class LeadQualificationProcessor extends WorkerHost {
       },
     });
     await this.leadsPubSub.publishLead(lead);
+  }
+
+  private async emailReply(
+    leadId: string,
+    org: { name: string; gmailUser: string | null; gmailAppPassword: string | null },
+    draftReply: string,
+    job: LeadQualificationJobData,
+  ): Promise<void> {
+    const text = draftReply.trim();
+    const from =
+      org.gmailUser && org.gmailAppPassword
+        ? { user: org.gmailUser, appPassword: org.gmailAppPassword }
+        : null;
+    if (!text || !this.mail.canSend(from)) return;
+
+    try {
+      const sent = await this.mail.sendReply({
+        to: job.lead.email,
+        subject: replySubject(org.name, job.subject),
+        text,
+        replyToMessageId: job.replyToMessageId,
+        from: from ?? undefined,
+      });
+      if (!sent) return;
+      const lead = await this.prisma.lead.update({
+        where: { id: leadId },
+        data: { status: LeadStatus.CONTACTED },
+      });
+      await this.leadsPubSub.publishLead(lead);
+    } catch (error) {
+      this.logger.error(`Could not email ${job.lead.email} for lead ${leadId}: ${String(error)}`);
+    }
   }
 }

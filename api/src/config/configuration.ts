@@ -7,6 +7,9 @@ export interface AppConfig {
   agentServiceUrl: string;
   publicApiUrl: string;
   webAppUrl: string;
+  gmailUser: string;
+  gmailAppPassword: string;
+  inboundEmailToken: string;
 }
 
 /**
@@ -22,4 +25,7 @@ export const configuration = (): AppConfig => ({
   agentServiceUrl: process.env.AGENT_SERVICE_URL ?? 'http://localhost:8000',
   publicApiUrl: process.env.PUBLIC_API_URL ?? 'http://localhost:3001',
   webAppUrl: process.env.WEB_APP_URL ?? 'http://localhost:3000',
+  gmailUser: process.env.GMAIL_USER ?? '',
+  gmailAppPassword: process.env.GMAIL_APP_PASSWORD ?? '',
+  inboundEmailToken: process.env.INBOUND_EMAIL_TOKEN ?? '',
 });

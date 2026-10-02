@@ -12,6 +12,10 @@ export interface LeadQualificationJobData {
   orgId: string;
   leadId: string;
   lead: IngestedLead;
+  /** Original email subject, when the lead arrived by mail. */
+  subject?: string;
+  /** RFC Message-ID, so the reply threads in the sender's inbox. */
+  replyToMessageId?: string;
 }
 
 /** Mirrors `LeadQualification` in agent-service/app/schemas.py. */
