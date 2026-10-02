@@ -11,8 +11,14 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 export class GqlThrottlerGuard extends ThrottlerGuard {
   protected getRequestResponse(context: ExecutionContext) {
     if (context.getType<'graphql'>() === 'graphql') {
-      const ctx = GqlExecutionContext.create(context).getContext();
-      return { req: ctx.req, res: ctx.res };
+      const ctx = GqlExecutionContext.create(context).getContext<{
+        req?: unknown;
+        res?: { header?: (...args: unknown[]) => unknown };
+      }>();
+      return {
+        req: ctx.req,
+        res: ctx.res ?? { header: () => undefined },
+      };
     }
     const http = context.switchToHttp();
     return { req: http.getRequest(), res: http.getResponse() };

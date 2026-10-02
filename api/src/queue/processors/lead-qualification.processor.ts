@@ -1,16 +1,14 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import type { Job } from 'bullmq';
-import { LeadTier } from '@prisma/client';
+import { LeadStatus, LeadTier } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { AgentClient } from '../agent.client.js';
 import { splitCriteria } from '../criteria.util.js';
 import { deriveTier } from '../lead-tier.util.js';
 import { LEAD_QUALIFICATION_QUEUE } from '../queue.constants.js';
-import type {
-  IngestedLead,
-  LeadQualificationJobData,
-} from '../types/lead-qualification-job.type.js';
+import type { LeadQualificationJobData } from '../types/lead-qualification-job.type.js';
+import { LeadsPubSub } from '../../leads/leads.pubsub.js';
 
 @Processor(LEAD_QUALIFICATION_QUEUE)
 export class LeadQualificationProcessor extends WorkerHost {
@@ -19,12 +17,13 @@ export class LeadQualificationProcessor extends WorkerHost {
   constructor(
     private readonly prisma: PrismaService,
     private readonly agent: AgentClient,
+    private readonly leadsPubSub: LeadsPubSub,
   ) {
     super();
   }
 
   async process(job: Job<LeadQualificationJobData>): Promise<void> {
-    const { orgId, lead } = job.data;
+    const { orgId, leadId, lead } = job.data;
 
     const org = await this.prisma.organization.findUnique({
       where: { id: orgId },
@@ -37,7 +36,7 @@ export class LeadQualificationProcessor extends WorkerHost {
     });
     if (!org) {
       // The workspace is gone; retrying will never help.
-      this.logger.warn(`Dropping lead for unknown org ${orgId}`);
+      this.logger.warn(`Dropping lead ${leadId} for unknown org ${orgId}`);
       return;
     }
 
@@ -49,15 +48,12 @@ export class LeadQualificationProcessor extends WorkerHost {
         replyTone: org.replyTone,
       });
 
-      await this.prisma.lead.create({
-        data: {
-          ...this.leadColumns(orgId, lead),
-          score: result.fit_score,
-          tier: deriveTier(result.fit_score, result.qualification),
-          reasoning: result.reasoning,
-          draftReply: result.draft_reply,
-          keySignals: result.key_signals,
-        },
+      await this.persistQualification(leadId, {
+        score: result.fit_score,
+        tier: deriveTier(result.fit_score, result.qualification),
+        reasoning: result.reasoning,
+        draftReply: result.draft_reply,
+        keySignals: result.key_signals,
       });
     } catch (error) {
       const attempts = job.opts.attempts ?? 1;
@@ -65,35 +61,39 @@ export class LeadQualificationProcessor extends WorkerHost {
         throw error;
       }
 
-      // Retries are exhausted. Store the lead unqualified rather than losing
-      // it — WARM keeps it in the middle of triage instead of buried.
+      // Retries are exhausted. Keep the row and mark it reviewed so it is
+      // visible for manual triage rather than lost.
       this.logger.error(
-        `Qualification failed for org ${orgId} after ${attempts} attempts: ${String(error)}`,
+        `Qualification failed for lead ${leadId} after ${attempts} attempts: ${String(error)}`,
       );
-      await this.prisma.lead.create({
-        data: {
-          ...this.leadColumns(orgId, lead),
-          score: 0,
-          tier: LeadTier.WARM,
-          reasoning:
-            'Automatic qualification failed after repeated attempts; this lead needs manual review.',
-          draftReply: '',
-          keySignals: [],
-        },
+      await this.persistQualification(leadId, {
+        score: 0,
+        tier: LeadTier.WARM,
+        reasoning:
+          'Automatic qualification failed after repeated attempts; this lead needs manual review.',
+        draftReply: '',
+        keySignals: [],
       });
     }
   }
 
-  private leadColumns(orgId: string, lead: IngestedLead) {
-    return {
-      orgId,
-      name: lead.fullName,
-      email: lead.email,
-      company: lead.companyName ?? null,
-      companyDomain: lead.companyDomain ?? null,
-      jobTitle: lead.jobTitle ?? null,
-      source: lead.source ?? null,
-      message: lead.message,
-    };
+  private async persistQualification(
+    leadId: string,
+    data: {
+      score: number;
+      tier: LeadTier;
+      reasoning: string;
+      draftReply: string;
+      keySignals: string[];
+    },
+  ): Promise<void> {
+    const lead = await this.prisma.lead.update({
+      where: { id: leadId },
+      data: {
+        ...data,
+        status: LeadStatus.REVIEWED,
+      },
+    });
+    await this.leadsPubSub.publishLead(lead);
   }
 }

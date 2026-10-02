@@ -37,6 +37,20 @@ class LeadQualification(BaseModel):
     draft_reply: str = Field(description="A personalized reply ready to send to the lead")
 
 
+class CompanyEnrichment(BaseModel):
+    """Firmographic data looked up from the lead's company domain. Any field
+    may be missing depending on what the provider has on file."""
+
+    industry: str | None = None
+    employee_count: int | None = None
+    employee_range: str | None = None
+    estimated_annual_revenue: str | None = None
+    description: str | None = None
+
+
 class QualifyResponse(BaseModel):
     result: LeadQualification
     model: str
+    enrichment: CompanyEnrichment | None = Field(
+        default=None, description="Company data used to inform the score, if a domain was given and lookup succeeded"
+    )

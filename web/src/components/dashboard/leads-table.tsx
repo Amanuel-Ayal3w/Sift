@@ -2,6 +2,7 @@
 
 import { Fragment, useState } from "react";
 import { ChevronDown, MessageSquareText, Sparkles } from "lucide-react";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -14,139 +15,95 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TierBadge } from "@/components/dashboard/tier-badge";
-import { cn } from "@/lib/utils";
-
-type LeadStatus = "NEW" | "REVIEWED" | "CONTACTED" | "ARCHIVED";
-
-type Lead = {
-  id: string;
-  name: string;
-  email: string;
-  company: string;
-  source: string;
-  score: number;
-  tier: "HOT" | "WARM" | "COLD";
-  status: LeadStatus;
-  time: string;
-  reasoning: string;
-  draftReply: string;
-};
-
-const leads: Lead[] = [
-  {
-    id: "1",
-    name: "Sarah Chen",
-    email: "sarah@acme.io",
-    company: "Acme Corp",
-    source: "Inbound Form",
-    score: 92,
-    tier: "HOT",
-    status: "REVIEWED",
-    time: "2m ago",
-    reasoning:
-      "VP Sales at a 150 person FinTech company. Stated budget of $50k+, uses Salesforce. Matches the ICP on company size, industry, and expressed clear intent to buy within 48 hours.",
-    draftReply:
-      "Hi Sarah, thanks for reaching out about lead qualification. With a 25 person sales team, our Growth plan would be a great fit. Want me to send over a tailored proposal?",
-  },
-  {
-    id: "2",
-    name: "James Doe",
-    email: "j.doe@northwind.com",
-    company: "Northwind",
-    source: "Webhook",
-    score: 76,
-    tier: "WARM",
-    status: "NEW",
-    time: "14m ago",
-    reasoning:
-      "Came through the HubSpot integration already in a qualified deal stage. Company size and budget signals are positive, but intent signals are moderate since no direct demo request yet.",
-    draftReply:
-      "Hi James, I see Northwind came through your HubSpot integration. Your team is already in our qualified pipeline, so I've drafted a follow up based on your last conversation with Alex.",
-  },
-  {
-    id: "3",
-    name: "Elena Voss",
-    email: "elena@pinnaclesaas.com",
-    company: "Pinnacle SaaS",
-    source: "Partner Referral",
-    score: 86,
-    tier: "HOT",
-    status: "CONTACTED",
-    time: "1h ago",
-    reasoning:
-      "Referred by a Gold tier partner. VP Operations title, 80 employee SaaS company, strong industry fit. Partner referrals historically convert 3x higher than cold inbound.",
-    draftReply:
-      "Hi Elena, Globex Partners recommended we connect. Welcome to Sift! As a Gold partner referral, you'll get priority onboarding and a dedicated success manager from day one.",
-  },
-  {
-    id: "4",
-    name: "David Kim",
-    email: "david@relayhq.com",
-    company: "RelayHQ",
-    source: "Event Signup",
-    score: 78,
-    tier: "WARM",
-    status: "NEW",
-    time: "3h ago",
-    reasoning:
-      "Met at SaaStr Annual. VP Sales at a Series B company that recently raised $18M. Lead scoring was mentioned as a stated priority, matching a core use case.",
-    draftReply:
-      "Hi David, great meeting you at SaaStr! You mentioned lead scoring was a priority for RelayHQ post Series B. I've put together a quick overview of how Sift handles qualification at your scale.",
-  },
-  {
-    id: "5",
-    name: "Marcus Webb",
-    email: "marcus@initech.com",
-    company: "Initech",
-    source: "Demo Request",
-    score: 94,
-    tier: "HOT",
-    status: "REVIEWED",
-    time: "5h ago",
-    reasoning:
-      "CTO at a 320 employee company, booked a demo directly. Currently using spreadsheets for lead routing, a clear pain point Sift solves. Highest intent signal in the queue.",
-    draftReply:
-      "Hi Marcus, looking forward to your demo tomorrow at 2pm. I've prepared a walkthrough focused on lead routing for your 320 person team. Shall I include your RevOps lead on the invite?",
-  },
-  {
-    id: "6",
-    name: "Priya Patel",
-    email: "priya@brightwave.io",
-    company: "Brightwave",
-    source: "Pricing Inquiry",
-    score: 82,
-    tier: "WARM",
-    status: "ARCHIVED",
-    time: "1d ago",
-    reasoning:
-      "18 rep team evaluating pricing tiers at roughly 2,400 leads per month. Best fit is the Growth plan. Archived after initial reply went unanswered for a week.",
-    draftReply:
-      "Hi Priya, based on your ~2,400 monthly leads and 18 person team, Growth at $149/mo is the best fit. I've attached a breakdown showing projected time saved per rep.",
-  },
-];
+import { cn, formatRelativeTime, initials, avatarTone } from "@/lib/utils";
+import {
+  LEADS_QUERY,
+  UPDATE_LEAD_STATUS_MUTATION,
+  type Lead,
+  type LeadsResult,
+  type LeadsVars,
+  type LeadStatus,
+  type UpdateLeadStatusResult,
+  type UpdateLeadStatusVars,
+} from "@/lib/graphql/leads";
 
 const statusStyles: Record<LeadStatus, string> = {
-  NEW: "border-primary/40 text-primary",
-  REVIEWED: "border-border text-foreground",
-  CONTACTED: "border-border text-muted-foreground",
-  ARCHIVED: "border-border text-muted-foreground/60",
+  NEW: "border-transparent bg-primary text-primary-foreground",
+  REVIEWED: "border-transparent bg-muted text-foreground",
+  CONTACTED: "border-transparent bg-muted text-muted-foreground",
+  ARCHIVED: "border-transparent bg-muted text-muted-foreground/70",
 };
 
-export function LeadsTable() {
-  const [expandedId, setExpandedId] = useState<string | null>(leads[0].id);
+function matchesSearch(lead: Lead, search: string) {
+  const needle = search.trim().toLowerCase();
+  if (!needle) return true;
+  return (
+    lead.name.toLowerCase().includes(needle) ||
+    lead.email.toLowerCase().includes(needle) ||
+    (lead.company?.toLowerCase().includes(needle) ?? false)
+  );
+}
+
+export function LeadsTable({
+  statusFilter,
+  search = "",
+}: {
+  statusFilter?: LeadStatus;
+  search?: string;
+}) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { data, loading } = useQuery<LeadsResult, LeadsVars>(LEADS_QUERY, {
+    variables: { status: statusFilter },
+  });
+  const [updateLeadStatus] = useMutation<
+    UpdateLeadStatusResult,
+    UpdateLeadStatusVars
+  >(UPDATE_LEAD_STATUS_MUTATION);
+
+  const leads = (data?.leads ?? []).filter((lead) => matchesSearch(lead, search));
+
+  if (loading && !data) {
+    return (
+      <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground glass">
+        Loading leads…
+      </div>
+    );
+  }
+
+  if (leads.length === 0) {
+    return (
+      <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground glass">
+        No leads yet.
+      </div>
+    );
+  }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-card">
+    <div className="overflow-hidden rounded-2xl border border-border bg-card glass">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="pl-4">Lead</TableHead>
-            <TableHead>Company</TableHead>
-            <TableHead>Source</TableHead>
-            <TableHead>Score</TableHead>
-            <TableHead>Tier</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="pr-4 text-right">Time</TableHead>
+            <TableHead className="h-11 pl-5 font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              Lead
+            </TableHead>
+            <TableHead className="h-11 font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              Company
+            </TableHead>
+            <TableHead className="h-11 font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              Source
+            </TableHead>
+            <TableHead className="h-11 font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              Score
+            </TableHead>
+            <TableHead className="h-11 font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              Tier
+            </TableHead>
+            <TableHead className="h-11 font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              Status
+            </TableHead>
+            <TableHead className="h-11 pr-5 text-right font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              Time
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -161,14 +118,22 @@ export function LeadsTable() {
                   aria-expanded={expanded}
                   className="cursor-pointer"
                 >
-                  <TableCell className="pl-4">
-                    <div className="flex items-center gap-2">
+                  <TableCell className="py-3.5 pl-5">
+                    <div className="flex items-center gap-3">
                       <ChevronDown
                         className={cn(
                           "size-3.5 shrink-0 text-muted-foreground transition-transform",
                           expanded && "rotate-180"
                         )}
                       />
+                      <span
+                        className={cn(
+                          "flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-medium",
+                          avatarTone(lead.email)
+                        )}
+                      >
+                        {initials(lead.name) || "?"}
+                      </span>
                       <div>
                         <p className="font-medium text-foreground">
                           {lead.name}
@@ -179,28 +144,25 @@ export function LeadsTable() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {lead.company}
+                  <TableCell className="py-3.5 text-muted-foreground">
+                    {lead.company ?? "—"}
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {lead.source}
+                  <TableCell className="py-3.5 text-muted-foreground">
+                    {lead.source ?? "—"}
                   </TableCell>
-                  <TableCell className="font-semibold text-foreground">
-                    {lead.score}
+                  <TableCell className="py-3.5 text-lg font-medium tracking-tight text-foreground">
+                    {lead.score ?? "—"}
                   </TableCell>
-                  <TableCell>
-                    <TierBadge tier={lead.tier} />
+                  <TableCell className="py-3.5">
+                    {lead.tier ? <TierBadge tier={lead.tier} /> : "—"}
                   </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={statusStyles[lead.status]}
-                    >
+                  <TableCell className="py-3.5">
+                    <Badge className={statusStyles[lead.status]}>
                       {lead.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="pr-4 text-right text-muted-foreground">
-                    {lead.time}
+                  <TableCell className="py-3.5 pr-5 text-right text-xs text-muted-foreground">
+                    {formatRelativeTime(lead.createdAt)}
                   </TableCell>
                 </TableRow>
                 {expanded && (
@@ -218,11 +180,11 @@ export function LeadsTable() {
                             <Sparkles className="size-3.5 text-primary" />
                           </span>
                           <div>
-                            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            <p className="mb-1 font-mono text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                               Agent reasoning
                             </p>
                             <p className="text-sm leading-relaxed text-foreground">
-                              {lead.reasoning}
+                              {lead.reasoning ?? "Qualification in progress…"}
                             </p>
                           </div>
                         </div>
@@ -232,12 +194,12 @@ export function LeadsTable() {
                         <div className="rounded-xl border border-border bg-card p-4">
                           <div className="mb-2 flex items-center gap-2">
                             <MessageSquareText className="size-3.5 text-muted-foreground" />
-                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            <p className="font-mono text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                               Draft reply
                             </p>
                           </div>
                           <p className="text-sm leading-relaxed text-foreground">
-                            {lead.draftReply}
+                            {lead.draftReply ?? "A reply will appear once the lead is scored."}
                           </p>
                           <div className="mt-4 flex justify-end gap-2">
                             <Button variant="outline" size="sm">
@@ -245,6 +207,12 @@ export function LeadsTable() {
                             </Button>
                             <Button
                               size="sm"
+                              disabled={lead.status === "CONTACTED"}
+                              onClick={() =>
+                                updateLeadStatus({
+                                  variables: { id: lead.id, status: "CONTACTED" },
+                                })
+                              }
                               className="bg-primary text-primary-foreground hover:bg-primary/90"
                             >
                               Send

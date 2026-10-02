@@ -20,10 +20,13 @@ export function durationToMs(duration: string): number {
 }
 
 export function authCookieOptions(expiresIn: string): CookieOptions {
+  const production = process.env.NODE_ENV === 'production';
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: production,
+    // The dashboard and API are different sites in production, so the cookie
+    // must be sent on cross-site GraphQL requests. Localhost stays lax.
+    sameSite: production ? 'none' : 'lax',
     path: '/',
     maxAge: durationToMs(expiresIn),
   };

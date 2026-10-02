@@ -4,7 +4,7 @@ export function DashboardMockup() {
   return (
     <div className="relative">
       <svg
-        className="absolute -top-6 -right-4 size-16 text-primary opacity-60"
+        className="absolute -top-6 -right-4 size-16 text-foreground/40"
         viewBox="0 0 64 64"
         aria-hidden
       >
@@ -27,7 +27,7 @@ export function WorkflowMockup() {
   return (
     <div className="relative">
       <svg
-        className="absolute -top-4 -right-8 size-12 text-primary opacity-50"
+        className="absolute -top-4 -right-8 size-12 text-foreground/40"
         viewBox="0 0 48 48"
         aria-hidden
       >

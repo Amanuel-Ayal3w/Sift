@@ -24,16 +24,16 @@ type IntegrationsPayload {
 type Lead {
   company: String
   createdAt: DateTime!
-  draftReply: String!
+  draftReply: String
   email: String!
   id: ID!
   keySignals: [String!]!
   name: String!
-  reasoning: String!
-  score: Int!
+  reasoning: String
+  score: Int
   source: String
   status: LeadStatus!
-  tier: LeadTier!
+  tier: LeadTier
 }
 
 enum LeadStatus {
@@ -74,6 +74,10 @@ input SignupInput {
   companyName: String!
   email: String!
   password: String!
+}
+
+type Subscription {
+  leadUpdated: Lead!
 }
 
 input UpdateWorkspaceInput {

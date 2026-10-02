@@ -21,8 +21,8 @@ const features = [
 
 function BulletItem({ children }: { children: React.ReactNode }) {
   return (
-    <li className="flex gap-3 text-sm leading-relaxed text-white/80 sm:text-base">
-      <span className="mt-1 shrink-0 text-primary" aria-hidden>
+    <li className="flex gap-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+      <span className="mt-1 shrink-0 font-medium text-foreground" aria-hidden>
         *
       </span>
       <span>{children}</span>
@@ -32,14 +32,14 @@ function BulletItem({ children }: { children: React.ReactNode }) {
 
 export function FeatureCards() {
   return (
-    <section id="features" className="bg-primary py-6 sm:py-8">
+    <section id="features" className="bg-background py-6 sm:py-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:px-6 lg:px-10">
         {features.map((feature) => (
           <div
             key={feature.title}
-            className="grid items-center gap-8 rounded-3xl bg-surface-dark p-8 lg:grid-cols-[1fr_auto_1fr] lg:gap-10 lg:p-16"
+            className="grid items-center gap-8 rounded-xl border border-border bg-background p-8 lg:grid-cols-[1fr_auto_1fr] lg:gap-10 lg:p-16"
           >
-            <h2 className="text-2xl font-bold leading-tight text-white sm:text-3xl lg:text-4xl">
+            <h2 className="text-2xl font-medium leading-tight text-foreground sm:text-3xl lg:text-4xl">
               {feature.title}
             </h2>
 

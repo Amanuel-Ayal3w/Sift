@@ -1,0 +1,48 @@
+# Render Blueprint for the API, agent, and Redis.
+# Postgres is Neon: set DATABASE_URL on sift-api after the database exists.
+# After the first deploy, set WEB_APP_URL to the Vercel origin and
+# PUBLIC_API_URL / AGENT_SERVICE_URL to the public https URLs.
+services:
+  - type: keyvalue
+    name: sift-redis
+    plan: free
+    ipAllowList: []
+
+  - type: web
+    name: sift-agent
+    runtime: python
+    rootDir: agent-service
+    buildCommand: pip install uv && uv sync
+    startCommand: uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-5
+
+  - type: web
+    name: sift-api
+    runtime: node
+    rootDir: api
+    buildCommand: npm install --include=dev && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && npm run start:prod
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: REDIS_URL
+        fromService:
+          name: sift-redis
+          type: keyvalue
+          property: connectionString
+      - key: AGENT_SERVICE_URL
+        sync: false
+      - key: PUBLIC_API_URL
+        sync: false
+      - key: WEB_APP_URL
+        sync: false

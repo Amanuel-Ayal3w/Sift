@@ -12,6 +12,7 @@ const navLinks = [
   { href: "#features", label: "Features" },
   { href: "#how-it-works", label: "How it works" },
   { href: "#pricing", label: "Pricing" },
+  { href: "#demo", label: "Try it" },
   { href: "#contact", label: "Need help?" },
 ];
 
@@ -19,7 +20,7 @@ export function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-lg">
+    <header className="sticky top-0 z-50 border-b border-border/50 bg-background/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-10">
         <Logo />
 
@@ -44,7 +45,7 @@ export function SiteHeader() {
             render={<Link href="/login">Log in</Link>}
           />
           <Button
-            className="hidden rounded-full bg-primary px-5 font-semibold text-primary-foreground hover:bg-primary/90 sm:inline-flex"
+            className="hidden rounded-lg bg-foreground px-5 font-semibold text-background hover:bg-foreground/90 sm:inline-flex"
             nativeButton={false}
             render={<Link href="/signup">Sign up now!</Link>}
           />
@@ -62,7 +63,7 @@ export function SiteHeader() {
 
       <div
         className={cn(
-          "overflow-hidden border-t border-border/60 bg-background transition-all md:hidden",
+          "overflow-hidden border-t border-border/50 bg-background transition-all md:hidden",
           mobileOpen ? "max-h-80" : "max-h-0"
         )}
       >
@@ -80,12 +81,12 @@ export function SiteHeader() {
           <div className="mt-2 flex flex-col gap-2 border-t border-border pt-4">
             <Button
               variant="outline"
-              className="w-full rounded-full"
+              className="w-full rounded-lg"
               nativeButton={false}
               render={<Link href="/login">Log in</Link>}
             />
             <Button
-              className="w-full rounded-full bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
+              className="w-full rounded-lg bg-foreground font-semibold text-background hover:bg-foreground/90"
               nativeButton={false}
               render={<Link href="/signup">Sign up now!</Link>}
             />

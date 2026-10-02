@@ -10,9 +10,9 @@ export function TierBadge({
   return (
     <span
       className={cn(
-        "rounded-full px-2 py-0.5 text-[10px] font-bold",
-        tier === "HOT" && "bg-primary text-black",
-        tier === "WARM" && "bg-[#e8b44f] text-black",
+        "rounded-full px-2 py-0.5 text-[10px] font-medium",
+        tier === "HOT" && "bg-foreground text-background",
+        tier === "WARM" && "bg-muted text-foreground",
         tier === "COLD" && "bg-muted text-muted-foreground",
         className
       )}
@@ -25,10 +25,10 @@ export function TierBadge({
 export function ScoreRing({ score }: { score: number }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-2xl font-bold text-foreground">{score}</span>
+      <span className="text-2xl font-medium text-foreground">{score}</span>
       <div className="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
         <div
-          className="h-full rounded-full bg-primary"
+          className="h-full rounded-full bg-foreground"
           style={{ width: `${score}%` }}
         />
       </div>
@@ -96,18 +96,18 @@ export function DashboardPreview({ compact = false }: { compact?: boolean }) {
   return (
     <div
       className={cn(
-        "mx-auto overflow-hidden rounded-2xl border border-border bg-card shadow-2xl",
+        "mx-auto overflow-hidden rounded-2xl border border-border bg-card shadow-2xl glass",
         compact ? "min-w-[460px] text-[10px]" : "w-[720px] max-w-full text-xs"
       )}
     >
       {/* Title bar */}
-      <div className="flex items-center gap-2 border-b border-border bg-primary px-4 py-2.5">
+      <div className="flex items-center gap-2 border-b border-border bg-foreground px-4 py-2.5">
         <div className="flex gap-1.5">
-          <div className="size-2.5 rounded-full bg-black/20" />
-          <div className="size-2.5 rounded-full bg-black/20" />
-          <div className="size-2.5 rounded-full bg-black/20" />
+          <div className="size-2.5 rounded-full bg-white/30" />
+          <div className="size-2.5 rounded-full bg-white/30" />
+          <div className="size-2.5 rounded-full bg-white/30" />
         </div>
-        <span className="mx-auto text-[11px] font-semibold text-black">
+        <span className="mx-auto text-[11px] font-medium text-background">
           Sift, Lead Inbox
         </span>
       </div>
@@ -133,7 +133,7 @@ export function DashboardPreview({ compact = false }: { compact?: boolean }) {
                 className={cn(
                   "flex items-center justify-between rounded-lg px-2 py-1.5 sm:px-3",
                   item.active
-                    ? "bg-primary/15 text-primary"
+                    ? "bg-foreground text-background"
                     : "text-muted-foreground"
                 )}
               >
@@ -151,7 +151,14 @@ export function DashboardPreview({ compact = false }: { compact?: boolean }) {
                   </span>
                 )}
                 {item.count && (
-                  <span className="rounded-full bg-primary px-1.5 text-[9px] font-bold text-black">
+                  <span
+                    className={cn(
+                      "rounded-full px-1.5 text-[9px] font-medium",
+                      item.active
+                        ? "bg-white/20 text-background"
+                        : "bg-foreground text-background"
+                    )}
+                  >
                     {item.count}
                   </span>
                 )}
@@ -215,7 +222,7 @@ export function DashboardPreview({ compact = false }: { compact?: boolean }) {
           </div>
 
           {/* Score + reasoning */}
-          <div className="mb-3 rounded-xl bg-[#e8b44f]/15 p-3">
+          <div className="mb-3 rounded-xl bg-foreground/10 p-3">
             <p className="mb-1 text-[10px] font-semibold text-foreground/80">
               Lead Score
             </p>
@@ -260,15 +267,15 @@ export function DashboardPreview({ compact = false }: { compact?: boolean }) {
               <span className="rounded-full border border-border px-3 py-1 text-[9px] text-muted-foreground">
                 Edit
               </span>
-              <span className="rounded-full bg-primary px-3 py-1 text-[9px] font-bold text-black">
+              <span className="rounded-full bg-foreground px-3 py-1 text-[9px] font-medium text-background">
                 Send
               </span>
             </div>
           </div>
 
           {/* Pipeline routing */}
-          <div className="mt-3 flex items-center gap-2 rounded-xl bg-primary/10 px-3 py-2">
-            <div className="size-2 rounded-full bg-primary" />
+          <div className="mt-3 flex items-center gap-2 rounded-xl bg-foreground/10 px-3 py-2">
+            <div className="size-2 rounded-full bg-foreground" />
             <p className="text-[9px] text-foreground/80">
               Routed to{" "}
               <span className="font-medium text-foreground">
@@ -314,7 +321,7 @@ export function LeadAnalysisMockup() {
             },
           ].map((item) => (
             <div key={item.signal} className="flex gap-2">
-              <span className="mt-0.5 size-4 shrink-0 rounded-full bg-primary text-center text-[9px] font-bold leading-4 text-black">
+              <span className="mt-0.5 size-4 shrink-0 rounded-full bg-white text-center text-[9px] font-medium leading-4 text-black">
                 ✓
               </span>
               <div>
@@ -323,8 +330,8 @@ export function LeadAnalysisMockup() {
               </div>
             </div>
           ))}
-          <div className="rounded-lg bg-primary/15 px-3 py-2">
-            <p className="text-[10px] font-bold text-primary">
+          <div className="rounded-lg bg-white/10 px-3 py-2">
+            <p className="text-[10px] font-bold text-white/80">
               Score: 92 — HOT · Route to AE
             </p>
           </div>
@@ -358,13 +365,13 @@ export function CriteriaMockup() {
                 <p className="text-[10px] font-medium text-white">{item.rule}</p>
                 <p className="text-[9px] text-white/50">{item.value}</p>
               </div>
-              <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[9px] font-medium text-primary">
+              <span className="rounded-full bg-white/15 px-2 py-0.5 text-[9px] font-medium text-white/70">
                 {item.weight}
               </span>
             </div>
           ))}
           <div className="mt-2 flex justify-center">
-            <span className="rounded-full bg-primary px-4 py-1.5 text-[10px] font-bold text-black">
+            <span className="rounded-full bg-white px-4 py-1.5 text-[10px] font-medium text-black">
               + Add criterion
             </span>
           </div>

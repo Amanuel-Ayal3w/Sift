@@ -1,8 +1,18 @@
+"use client";
+
+import { Suspense, useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Check } from "lucide-react";
+import { useMutation } from "@apollo/client/react";
 import { AuthField } from "@/components/auth/auth-field";
 import { AuthLayout } from "@/components/auth/auth-layout";
 import { Button } from "@/components/ui/button";
+import {
+  SIGNUP_MUTATION,
+  type SignupResult,
+  type SignupVars,
+} from "@/lib/graphql/auth";
 
 const perks = [
   "30 day free trial, no credit card",
@@ -10,7 +20,28 @@ const perks = [
   "AI drafted replies on every lead",
 ];
 
-export default function SignupPage() {
+function SignupForm() {
+  const router = useRouter();
+  const params = useSearchParams();
+  const plan = params.get("plan");
+  const [companyName, setCompanyName] = useState(params.get("company") ?? "");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [signup, { loading, error }] = useMutation<SignupResult, SignupVars>(
+    SIGNUP_MUTATION
+  );
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await signup({ variables: { input: { companyName, email, password } } });
+      router.push("/dashboard");
+      router.refresh();
+    } catch {
+      // surfaced via `error` below
+    }
+  };
+
   return (
     <AuthLayout
       title="Start qualifying leads"
@@ -38,12 +69,21 @@ export default function SignupPage() {
         ))}
       </ul>
 
-      <form className="flex flex-col gap-5">
+      {plan && (
+        <p className="mb-6 text-sm text-muted-foreground">
+          You&apos;re starting on the{" "}
+          <span className="font-medium text-foreground capitalize">{plan}</span> plan.
+        </p>
+      )}
+
+      <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
         <AuthField
           id="company"
           label="Company name"
           placeholder="Acme Corp"
           autoComplete="organization"
+          value={companyName}
+          onChange={(e) => setCompanyName(e.target.value)}
           required
         />
 
@@ -53,6 +93,8 @@ export default function SignupPage() {
           type="email"
           placeholder="jane@company.com"
           autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
 
@@ -63,14 +105,23 @@ export default function SignupPage() {
           placeholder="Create a password"
           hint="At least 8 characters"
           autoComplete="new-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
         />
 
+        {error && (
+          <p className="text-sm text-destructive">
+            {error.message}
+          </p>
+        )}
+
         <Button
           type="submit"
+          disabled={loading}
           className="mt-1 h-12 rounded-full bg-primary text-base font-semibold text-primary-foreground shadow-sm shadow-primary/20 hover:bg-primary/90"
         >
-          Create account
+          {loading ? "Creating account…" : "Create account"}
         </Button>
       </form>
 
@@ -86,5 +137,13 @@ export default function SignupPage() {
         .
       </p>
     </AuthLayout>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupForm />
+    </Suspense>
   );
 }

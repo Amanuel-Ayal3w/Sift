@@ -23,7 +23,7 @@ export function AuthField({
         id={id}
         type={type}
         placeholder={placeholder}
-        className="h-12 rounded-xl border-border/80 bg-secondary/40 px-4 text-base shadow-sm transition-all placeholder:text-muted-foreground/60 focus-visible:border-primary/50 focus-visible:bg-background focus-visible:ring-primary/20"
+        className="h-12 rounded-xl border-border/80 bg-secondary/40 px-4 text-base shadow-sm transition-all placeholder:text-muted-foreground/60 focus-visible:border-primary/50 focus-visible:bg-background focus-visible:ring-primary/20 dark:bg-white/5 dark:backdrop-blur-md dark:focus-visible:bg-white/10"
         {...props}
       />
       {hint && (

@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type { Lead, LeadStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { LeadsPubSub } from './leads.pubsub.js';
 
 @Injectable()
 export class LeadsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly leadsPubSub: LeadsPubSub,
+  ) {}
 
   findMany(
     orgId: string,
@@ -33,6 +37,11 @@ export class LeadsService {
     status: LeadStatus,
   ): Promise<Lead> {
     await this.findOne(orgId, id);
-    return this.prisma.lead.update({ where: { id }, data: { status } });
+    const lead = await this.prisma.lead.update({
+      where: { id },
+      data: { status },
+    });
+    await this.leadsPubSub.publishLead(lead);
+    return lead;
   }
 }

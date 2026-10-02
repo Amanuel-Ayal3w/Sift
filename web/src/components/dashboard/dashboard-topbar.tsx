@@ -1,6 +1,13 @@
-import Link from "next/link";
-import { ThemeToggle } from "@/components/theme-toggle";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useMutation } from "@apollo/client/react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
+import {
+  LOGOUT_MUTATION,
+  type LogoutResult,
+} from "@/lib/graphql/auth";
 
 export function DashboardTopbar({
   title,
@@ -9,21 +16,35 @@ export function DashboardTopbar({
   title: string;
   description?: string;
 }) {
+  const router = useRouter();
+  const [logout, { loading }] = useMutation<LogoutResult>(LOGOUT_MUTATION);
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/login");
+    router.refresh();
+  };
+
   return (
-    <header className="flex items-center justify-between border-b border-border bg-background px-6 py-4">
+    <header className="flex items-start justify-between px-8 pt-8 pb-2">
       <div>
-        <h1 className="text-lg font-bold tracking-tight">{title}</h1>
+        <h1 className="text-[28px] font-medium tracking-tight text-foreground">
+          {title}
+        </h1>
         {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         )}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         <ThemeToggle />
         <Button
           variant="ghost"
-          nativeButton={false}
-          render={<Link href="/">Log out</Link>}
-        />
+          onClick={handleLogout}
+          disabled={loading}
+          className="text-muted-foreground"
+        >
+          Log out
+        </Button>
       </div>
     </header>
   );

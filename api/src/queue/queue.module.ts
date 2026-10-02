@@ -1,12 +1,14 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { LeadsModule } from '../leads/leads.module.js';
 import { AgentClient } from './agent.client.js';
 import { LeadQualificationProcessor } from './processors/lead-qualification.processor.js';
 import { LEAD_QUALIFICATION_QUEUE } from './queue.constants.js';
 
 @Module({
   imports: [
+    LeadsModule,
     BullModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

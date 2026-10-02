@@ -4,9 +4,11 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ThrottlerModule } from '@nestjs/throttler';
+import type { IncomingMessage } from 'node:http';
 import { join } from 'node:path';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
+import { attachCookies } from './auth/attach-cookies.js';
 import { AuthModule } from './auth/auth.module.js';
 import { GqlAuthGuard } from './auth/guards/gql-auth.guard.js';
 import { GqlThrottlerGuard } from './auth/guards/gql-throttler.guard.js';
@@ -20,6 +22,23 @@ import { WorkspaceModule } from './workspace/workspace.module.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
+type GraphqlContextSource = {
+  req?: IncomingMessage & { cookies?: Record<string, string> };
+  res?: unknown;
+  extra?: { request: IncomingMessage & { cookies?: Record<string, string> } };
+};
+
+function graphqlContext(raw: GraphqlContextSource) {
+  const req = raw.req ?? raw.extra?.request;
+  if (req) {
+    attachCookies(req);
+  }
+  return {
+    req,
+    res: raw.res ?? { header: () => undefined },
+  };
+}
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
@@ -29,7 +48,13 @@ const isProduction = process.env.NODE_ENV === 'production';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       // Resolvers need `res` to set the auth cookie and `req` to read it.
-      context: ({ req, res }: { req: unknown; res: unknown }) => ({ req, res }),
+      // Subscriptions reuse the upgrade request; cookies are parsed onto it.
+      context: graphqlContext,
+      subscriptions: {
+        'graphql-ws': {
+          path: '/graphql',
+        },
+      },
       graphiql: !isProduction,
       introspection: !isProduction,
     }),

@@ -1,24 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { DashboardTopbar } from "@/components/dashboard/dashboard-topbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-
-const defaultCriteria = `Qualify as HOT if the lead:
-- Works at a company with 50-500 employees
-- Has a stated budget of $25k+ per year
-- Is in SaaS, FinTech, or B2B services
-- Requested a demo or mentioned a specific timeline
-
-Qualify as WARM if the lead matches 2-3 of the above.
-Qualify as COLD if the lead is a student, competitor, or has no budget signal.`;
+import {
+  UPDATE_WORKSPACE_MUTATION,
+  WORKSPACE_QUERY,
+  type UpdateWorkspaceResult,
+  type UpdateWorkspaceVars,
+  type WorkspaceResult,
+} from "@/lib/graphql/workspace";
 
 export default function CriteriaPage() {
-  const [criteria, setCriteria] = useState(defaultCriteria);
-  const [saved, setSaved] = useState(true);
+  const { data, loading: queryLoading } = useQuery<WorkspaceResult>(
+    WORKSPACE_QUERY
+  );
+  const [criteria, setCriteria] = useState("");
+  const [dirty, setDirty] = useState(false);
+  const [updateWorkspace, { loading: saving }] = useMutation<
+    UpdateWorkspaceResult,
+    UpdateWorkspaceVars
+  >(UPDATE_WORKSPACE_MUTATION);
+
+  useEffect(() => {
+    if (data?.workspace) {
+      setCriteria(data.workspace.qualificationCriteria);
+    }
+  }, [data?.workspace]);
+
+  const handleSave = async () => {
+    await updateWorkspace({
+      variables: { input: { qualificationCriteria: criteria } },
+    });
+    setDirty(false);
+  };
 
   return (
     <>
@@ -26,7 +45,7 @@ export default function CriteriaPage() {
         title="Qualification Criteria"
         description="Tell the agent what a good lead looks like for your team"
       />
-      <main className="flex-1 p-6">
+      <main className="flex-1 px-8 pb-10 pt-4">
         <Card className="max-w-2xl border-border">
           <CardHeader>
             <CardTitle>Criteria</CardTitle>
@@ -40,11 +59,12 @@ export default function CriteriaPage() {
                 id="criteria"
                 rows={12}
                 value={criteria}
+                disabled={queryLoading}
                 onChange={(e) => {
                   setCriteria(e.target.value);
-                  setSaved(false);
+                  setDirty(true);
                 }}
-                className="font-mono text-xs"
+                className="text-sm"
               />
               <p className="text-xs text-muted-foreground">
                 The agent reasons over this text for every incoming lead, it
@@ -53,12 +73,13 @@ export default function CriteriaPage() {
             </div>
             <div className="flex items-center gap-3">
               <Button
-                onClick={() => setSaved(true)}
+                onClick={handleSave}
+                disabled={saving || queryLoading}
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                Save criteria
+                {saving ? "Saving…" : "Save criteria"}
               </Button>
-              {saved && (
+              {!dirty && !saving && data && (
                 <span className="text-xs text-muted-foreground">Saved</span>
               )}
             </div>

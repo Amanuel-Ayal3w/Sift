@@ -1,4 +1,3 @@
-import { DarkGradient } from "@/components/brand/dark-gradient";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ContactSection, CtaSection } from "@/components/landing/contact-cta";
@@ -6,12 +5,16 @@ import { FeatureCards } from "@/components/landing/feature-cards";
 import { HeroSection } from "@/components/landing/hero-section";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { PlatformSection } from "@/components/landing/platform-section";
+import { DemoForm } from "@/components/landing/demo-form";
 import { PricingSection } from "@/components/landing/pricing-section";
 
 export default function Home() {
   return (
-    <div className="relative flex flex-1 flex-col dark:bg-surface-dark">
-      <DarkGradient />
+    <div className="relative flex flex-1 flex-col bg-background">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[70vh] bg-grid bg-grid-fade"
+      />
       <div className="relative z-10 flex flex-1 flex-col">
         <SiteHeader />
         <main className="flex-1">
@@ -20,6 +23,7 @@ export default function Home() {
           <PlatformSection />
           <HowItWorks />
           <PricingSection />
+          <DemoForm />
           <ContactSection />
           <CtaSection />
         </main>
