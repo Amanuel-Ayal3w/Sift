@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useState } from "react";
-import { ChevronDown, MessageSquareText, Sparkles } from "lucide-react";
+import { ChevronDown, Mail, MessageSquareText, Sparkles } from "lucide-react";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,14 +17,18 @@ import {
 import { TierBadge } from "@/components/dashboard/tier-badge";
 import { cn, formatRelativeTime, initials, avatarTone } from "@/lib/utils";
 import {
+  INTEGRATIONS_QUERY,
+  type IntegrationsResult,
+} from "@/lib/graphql/integrations";
+import {
   LEADS_QUERY,
-  UPDATE_LEAD_STATUS_MUTATION,
+  SEND_LEAD_REPLY_MUTATION,
   type Lead,
   type LeadsResult,
   type LeadsVars,
   type LeadStatus,
-  type UpdateLeadStatusResult,
-  type UpdateLeadStatusVars,
+  type SendLeadReplyResult,
+  type SendLeadReplyVars,
 } from "@/lib/graphql/leads";
 
 const statusStyles: Record<LeadStatus, string> = {
@@ -52,13 +56,34 @@ export function LeadsTable({
   search?: string;
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [sendingId, setSendingId] = useState<string | null>(null);
+  const [sendError, setSendError] = useState<{ id: string; message: string } | null>(null);
   const { data, loading } = useQuery<LeadsResult, LeadsVars>(LEADS_QUERY, {
     variables: { status: statusFilter },
   });
-  const [updateLeadStatus] = useMutation<
-    UpdateLeadStatusResult,
-    UpdateLeadStatusVars
-  >(UPDATE_LEAD_STATUS_MUTATION);
+  const { data: integrations } = useQuery<IntegrationsResult>(INTEGRATIONS_QUERY);
+  const repliesEnabled = integrations?.integrations.repliesEnabled ?? false;
+  const [sendLeadReply] = useMutation<SendLeadReplyResult, SendLeadReplyVars>(
+    SEND_LEAD_REPLY_MUTATION,
+  );
+
+  const emailReply = async (leadId: string) => {
+    setSendingId(leadId);
+    setSendError(null);
+    try {
+      await sendLeadReply({
+        variables: { id: leadId },
+        refetchQueries: [{ query: LEADS_QUERY, variables: { status: statusFilter } }],
+      });
+    } catch (err) {
+      setSendError({
+        id: leadId,
+        message: err instanceof Error ? err.message : "Could not send this reply.",
+      });
+    } finally {
+      setSendingId(null);
+    }
+  };
 
   const leads = (data?.leads ?? []).filter((lead) => matchesSearch(lead, search));
 
@@ -191,33 +216,60 @@ export function LeadsTable({
 
                         <Separator />
 
+                        <div className="flex gap-3">
+                          <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted">
+                            <Mail className="size-3.5 text-muted-foreground" />
+                          </span>
+                          <div>
+                            <p className="mb-1 font-mono text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                              {lead.source === "Email" ? "Email they sent" : "Their message"}
+                            </p>
+                            <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground">
+                              {lead.message}
+                            </p>
+                          </div>
+                        </div>
+
+                        <Separator />
+
                         <div className="rounded-xl border border-border bg-card p-4">
                           <div className="mb-2 flex items-center gap-2">
                             <MessageSquareText className="size-3.5 text-muted-foreground" />
                             <p className="font-mono text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                              Draft reply
+                              {lead.status === "CONTACTED" ? "Emailed reply" : "Draft reply"}
                             </p>
                           </div>
-                          <p className="text-sm leading-relaxed text-foreground">
+                          <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground">
                             {lead.draftReply ?? "A reply will appear once the lead is scored."}
                           </p>
-                          <div className="mt-4 flex justify-end gap-2">
-                            <Button variant="outline" size="sm">
-                              Edit
-                            </Button>
-                            <Button
-                              size="sm"
-                              disabled={lead.status === "CONTACTED"}
-                              onClick={() =>
-                                updateLeadStatus({
-                                  variables: { id: lead.id, status: "CONTACTED" },
-                                })
-                              }
-                              className="bg-primary text-primary-foreground hover:bg-primary/90"
-                            >
-                              Send
-                            </Button>
-                          </div>
+                          {lead.status === "CONTACTED" ? (
+                            <p className="mt-3 text-xs text-muted-foreground">
+                              Sent to {lead.email}
+                            </p>
+                          ) : (
+                            <div className="mt-4 flex items-center justify-end gap-3">
+                              {sendError?.id === lead.id ? (
+                                <p className="text-xs text-destructive">{sendError.message}</p>
+                              ) : null}
+                              {!repliesEnabled ? (
+                                <p className="text-xs text-muted-foreground">
+                                  Connect Gmail under Integrations to email this reply.
+                                </p>
+                              ) : null}
+                              <Button
+                                size="sm"
+                                disabled={
+                                  !repliesEnabled ||
+                                  !lead.draftReply ||
+                                  sendingId === lead.id
+                                }
+                                onClick={() => emailReply(lead.id)}
+                                className="bg-primary text-primary-foreground hover:bg-primary/90"
+                              >
+                                {sendingId === lead.id ? "Sending…" : "Send email"}
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </TableCell>

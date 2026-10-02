@@ -13,7 +13,7 @@ export default function LeadsPage() {
     <>
       <DashboardTopbar
         title="Leads"
-        description="Every lead your org has received, scored and searchable"
+        description="Leads from email, forms, and webhooks, scored and ready to reply"
       />
       <main className="flex-1 space-y-4 px-8 pb-10 pt-4">
         <div className="relative max-w-sm">

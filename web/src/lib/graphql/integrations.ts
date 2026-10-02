@@ -8,6 +8,9 @@ export const INTEGRATIONS_QUERY = gql`
         name
         status
       }
+      mailboxAddress
+      repliesEnabled
+      inboxConnected
     }
   }
 `;
@@ -20,6 +23,26 @@ export type Channel = {
 export type IntegrationsPayload = {
   webhookUrl: string;
   channels: Channel[];
+  mailboxAddress: string | null;
+  repliesEnabled: boolean;
+  inboxConnected: boolean;
 };
 
 export type IntegrationsResult = { integrations: IntegrationsPayload };
+
+export const CONNECT_GMAIL_MUTATION = gql`
+  mutation ConnectGmail($input: ConnectGmailInput!) {
+    connectGmail(input: $input) {
+      mailboxAddress
+      repliesEnabled
+      inboxConnected
+      channels {
+        name
+        status
+      }
+    }
+  }
+`;
+
+export type ConnectGmailResult = { connectGmail: IntegrationsPayload };
+export type ConnectGmailVars = { input: { email: string; appPassword: string } };

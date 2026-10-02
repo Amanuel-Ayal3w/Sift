@@ -38,6 +38,14 @@ export class LeadsResolver {
   }
 
   @Mutation(() => Lead)
+  sendLeadReply(
+    @CurrentUser() current: AuthenticatedUser,
+    @Args('id', { type: () => ID }) id: string,
+  ): Promise<Lead> {
+    return this.leadsService.sendReply(current.orgId, id);
+  }
+
+  @Mutation(() => Lead)
   updateLeadStatus(
     @CurrentUser() current: AuthenticatedUser,
     @Args('id', { type: () => ID }) id: string,
