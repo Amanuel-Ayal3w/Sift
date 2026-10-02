@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Check } from "lucide-react";
 import { useMutation } from "@apollo/client/react";
 import { AuthField } from "@/components/auth/auth-field";
@@ -20,9 +20,11 @@ const perks = [
   "AI drafted replies on every lead",
 ];
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter();
-  const [companyName, setCompanyName] = useState("");
+  const params = useSearchParams();
+  const plan = params.get("plan");
+  const [companyName, setCompanyName] = useState(params.get("company") ?? "");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [signup, { loading, error }] = useMutation<SignupResult, SignupVars>(
@@ -66,6 +68,13 @@ export default function SignupPage() {
           </li>
         ))}
       </ul>
+
+      {plan && (
+        <p className="mb-6 text-sm text-muted-foreground">
+          You&apos;re starting on the{" "}
+          <span className="font-medium text-foreground capitalize">{plan}</span> plan.
+        </p>
+      )}
 
       <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
         <AuthField
@@ -128,5 +137,13 @@ export default function SignupPage() {
         .
       </p>
     </AuthLayout>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupForm />
+    </Suspense>
   );
 }

@@ -94,7 +94,11 @@ export function PricingSection() {
               className="h-12 rounded-lg bg-background px-8 font-semibold text-foreground hover:bg-background/90"
               nativeButton={false}
               render={
-                <Link href="/signup">Start my 30 day free trial</Link>
+                <Link
+                  href={`/signup?plan=${currentPrice <= 49 ? "starter" : "growth"}`}
+                >
+                  Start my 30 day free trial
+                </Link>
               }
             />
           </div>
@@ -127,7 +131,11 @@ export function PricingSection() {
               <Button
                 className="mt-8 w-full rounded-lg bg-foreground font-semibold text-background hover:bg-foreground/90"
                 nativeButton={false}
-                render={<Link href="/signup">Get started</Link>}
+                render={
+                  <Link href={`/signup?plan=${plan.name.toLowerCase()}`}>
+                    Get started
+                  </Link>
+                }
               />
             </div>
           ))}

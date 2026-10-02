@@ -5,6 +5,7 @@ import { FeatureCards } from "@/components/landing/feature-cards";
 import { HeroSection } from "@/components/landing/hero-section";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { PlatformSection } from "@/components/landing/platform-section";
+import { DemoForm } from "@/components/landing/demo-form";
 import { PricingSection } from "@/components/landing/pricing-section";
 
 export default function Home() {
@@ -22,6 +23,7 @@ export default function Home() {
           <PlatformSection />
           <HowItWorks />
           <PricingSection />
+          <DemoForm />
           <ContactSection />
           <CtaSection />
         </main>
