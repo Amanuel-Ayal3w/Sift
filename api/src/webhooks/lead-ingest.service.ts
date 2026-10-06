@@ -1,5 +1,5 @@
 import { InjectQueue } from '@nestjs/bullmq';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { LeadsPubSub } from '../leads/leads.pubsub.js';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -29,10 +29,13 @@ export class LeadIngestService {
   ): Promise<{ status: string; leadId: string }> {
     const org = await this.prisma.organization.findUnique({
       where: { webhookToken: token },
-      select: { id: true },
+      select: { id: true, suspendedAt: true },
     });
     if (!org) {
       throw new NotFoundException('Unknown webhook token');
+    }
+    if (org.suspendedAt) {
+      throw new ForbiddenException('Workspace is suspended');
     }
 
     const lead = await this.prisma.lead.create({

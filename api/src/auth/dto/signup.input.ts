@@ -1,5 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { BillingPlan } from '../../billing/billing-plan.enum.js';
 
 @InputType()
 export class SignupInput {
@@ -18,4 +19,9 @@ export class SignupInput {
   @MinLength(8)
   @MaxLength(200)
   password: string;
+
+  @Field(() => BillingPlan, { nullable: true })
+  @IsOptional()
+  @IsEnum(BillingPlan)
+  plan?: BillingPlan;
 }

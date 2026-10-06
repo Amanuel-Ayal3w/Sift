@@ -15,6 +15,7 @@ import { GqlThrottlerGuard } from './auth/guards/gql-throttler.guard.js';
 import { configuration } from './config/configuration.js';
 import { IntegrationsModule } from './integrations/integrations.module.js';
 import { LeadsModule } from './leads/leads.module.js';
+import { PlatformModule } from './platform/platform.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { QueueModule } from './queue/queue.module.js';
 import { WebhooksModule } from './webhooks/webhooks.module.js';
@@ -60,6 +61,7 @@ function graphqlContext(raw: GraphqlContextSource) {
     }),
     PrismaModule,
     AuthModule,
+    PlatformModule,
     WorkspaceModule,
     LeadsModule,
     IntegrationsModule,

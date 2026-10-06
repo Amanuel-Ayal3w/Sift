@@ -10,6 +10,8 @@ export interface AppConfig {
   gmailUser: string;
   gmailAppPassword: string;
   inboundEmailToken: string;
+  platformAdminEmail: string;
+  platformAdminPassword: string;
 }
 
 /**
@@ -28,4 +30,6 @@ export const configuration = (): AppConfig => ({
   gmailUser: process.env.GMAIL_USER ?? '',
   gmailAppPassword: process.env.GMAIL_APP_PASSWORD ?? '',
   inboundEmailToken: process.env.INBOUND_EMAIL_TOKEN ?? '',
+  platformAdminEmail: process.env.PLATFORM_ADMIN_EMAIL ?? '',
+  platformAdminPassword: process.env.PLATFORM_ADMIN_PASSWORD ?? '',
 });

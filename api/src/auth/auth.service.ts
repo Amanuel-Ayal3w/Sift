@@ -35,7 +35,12 @@ export class AuthService {
         email: input.email,
         passwordHash,
         role: 'OWNER',
-        org: { create: { name: input.companyName } },
+        org: {
+          create: {
+            name: input.companyName,
+            plan: input.plan ?? 'TRIAL',
+          },
+        },
       },
     });
 
@@ -45,11 +50,16 @@ export class AuthService {
   async login(input: LoginInput): Promise<{ user: User; token: string }> {
     const user = await this.prisma.user.findUnique({
       where: { email: input.email },
+      include: { org: { select: { suspendedAt: true } } },
     });
     // Same error for unknown email and bad password so the endpoint can't be
-    // used to enumerate accounts.
+    // used to enumerate accounts. Suspension is only revealed after the
+    // password checks out.
     if (!user || !(await bcrypt.compare(input.password, user.passwordHash))) {
       throw new UnauthorizedException('Invalid email or password');
+    }
+    if (user.org.suspendedAt) {
+      throw new UnauthorizedException('This workspace is suspended');
     }
 
     return { user, token: this.signToken(user) };

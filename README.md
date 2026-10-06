@@ -71,6 +71,8 @@ sequenceDiagram
 
 Auth is a separate path. Signup and login set `sift_token`. On localhost the cookie is `SameSite=Lax`. In production it is `SameSite=None; Secure`, because the dashboard and API are on different hosts. CORS allows only `WEB_APP_URL` and sends credentials.
 
+Platform operators use a separate account, not a workspace role. Set `PLATFORM_ADMIN_EMAIL` and `PLATFORM_ADMIN_PASSWORD` on the API. On boot, Sift creates that admin if the email is new, then you sign in at `/admin`. The session cookie is `sift_platform_token`. From there you can see every workspace, user, and lead total, and suspend a workspace. A suspended workspace cannot log in, accept webhooks, or finish scoring. Restoring it turns those back on. Data is kept either way.
+
 ### Data model
 
 One `Organization` is a workspace. It holds the qualification criteria, product description, reply tone, and a unique `webhookToken`. `User` rows belong to one org. `Lead` rows belong to one org and start as `NEW`; after the worker finishes they are `REVIEWED` with a score, tier, reasoning, and draft reply.
@@ -124,6 +126,7 @@ That runs the agent on port 8000, the API on port 3001, and the web app on port 
 | URL | What it is |
 |---|---|
 | http://localhost:3000 | Landing page and dashboard |
+| http://localhost:3000/admin | Platform super admin (after `PLATFORM_ADMIN_EMAIL` is set) |
 | http://localhost:3001/graphql | GraphQL (GraphiQL in development) |
 | http://localhost:3001/health | API health |
 | http://localhost:8000/docs | Agent OpenAPI docs |
@@ -178,7 +181,7 @@ Production hosts: Neon (Postgres), Render (API, agent, Redis), Vercel (web). Blu
 
 | Service | Required env |
 |---|---|
-| API | `DATABASE_URL`, `REDIS_URL`, `JWT_SECRET`, `AGENT_SERVICE_URL`, `PUBLIC_API_URL`, `WEB_APP_URL`, `NODE_ENV=production` |
+| API | `DATABASE_URL`, `REDIS_URL`, `JWT_SECRET`, `AGENT_SERVICE_URL`, `PUBLIC_API_URL`, `WEB_APP_URL`, `NODE_ENV=production`. Optional: `PLATFORM_ADMIN_EMAIL`, `PLATFORM_ADMIN_PASSWORD` |
 | Agent | `OPENAI_API_KEY`, `OPENAI_MODEL` (Clearbit key optional) |
 | Web | `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_GRAPHQL_URL`, `NEXT_PUBLIC_GRAPHQL_WS_URL`, `DEMO_WEBHOOK_URL` |
 

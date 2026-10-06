@@ -57,7 +57,12 @@ export type LoginVars = { input: { email: string; password: string } };
 
 export type SignupResult = { signup: AuthPayloadResult };
 export type SignupVars = {
-  input: { companyName: string; email: string; password: string };
+  input: {
+    companyName: string;
+    email: string;
+    password: string;
+    plan?: "TRIAL" | "STARTER" | "GROWTH";
+  };
 };
 
 export type LogoutResult = { logout: boolean };

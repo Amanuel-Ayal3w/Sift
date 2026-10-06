@@ -6,6 +6,12 @@ type AuthPayload {
   user: User!
 }
 
+enum BillingPlan {
+  GROWTH
+  STARTER
+  TRIAL
+}
+
 type Channel {
   name: String!
   status: String!
@@ -67,10 +73,86 @@ type Mutation {
   connectGmail(input: ConnectGmailInput!): IntegrationsPayload!
   login(input: LoginInput!): AuthPayload!
   logout: Boolean!
+  platformLogin(input: LoginInput!): PlatformAuthPayload!
+  platformLogout: Boolean!
   sendLeadReply(id: ID!): Lead!
+  setWorkspacePlan(id: ID!, plan: BillingPlan!): PlatformWorkspace!
+  setWorkspaceSuspended(id: ID!, suspended: Boolean!): PlatformWorkspace!
   signup(input: SignupInput!): AuthPayload!
   updateLeadStatus(id: ID!, status: LeadStatus!): Lead!
   updateWorkspace(input: UpdateWorkspaceInput!): Workspace!
+}
+
+type PlatformAdmin {
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+}
+
+type PlatformAuthPayload {
+  admin: PlatformAdmin!
+}
+
+type PlatformDay {
+  coldLeads: Int!
+  date: String!
+  hotLeads: Int!
+  leads: Int!
+  users: Int!
+  warmLeads: Int!
+  workspaces: Int!
+}
+
+type PlatformMetrics {
+  arr: Int!
+  averageScore: Int!
+  days: [PlatformDay!]!
+  mailboxCount: Int!
+  mrr: Int!
+  payingWorkspaces: Int!
+  plans: [PlatformPlanStat!]!
+  trialWorkspaces: Int!
+}
+
+type PlatformOverview {
+  archivedLeads: Int!
+  coldLeads: Int!
+  contactedLeads: Int!
+  hotLeads: Int!
+  leadCount: Int!
+  newLeads: Int!
+  reviewedLeads: Int!
+  suspendedWorkspaceCount: Int!
+  userCount: Int!
+  warmLeads: Int!
+  workspaceCount: Int!
+}
+
+type PlatformPlanStat {
+  monthlyRevenue: Int!
+  plan: BillingPlan!
+  workspaces: Int!
+}
+
+type PlatformUser {
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  role: String!
+  workspaceId: ID!
+  workspaceName: String!
+}
+
+type PlatformWorkspace {
+  createdAt: DateTime!
+  gmailConnected: Boolean!
+  id: ID!
+  leadCount: Int!
+  name: String!
+  ownerEmail: String
+  plan: BillingPlan!
+  suspended: Boolean!
+  userCount: Int!
 }
 
 type Query {
@@ -78,6 +160,11 @@ type Query {
   lead(id: ID!): Lead!
   leads(limit: Int! = 50, offset: Int! = 0, status: LeadStatus): [Lead!]!
   me: User!
+  platformMe: PlatformAdmin!
+  platformMetrics: PlatformMetrics!
+  platformOverview: PlatformOverview!
+  platformUsers: [PlatformUser!]!
+  platformWorkspaces: [PlatformWorkspace!]!
   workspace: Workspace!
 }
 
@@ -85,6 +172,7 @@ input SignupInput {
   companyName: String!
   email: String!
   password: String!
+  plan: BillingPlan
 }
 
 type Subscription {

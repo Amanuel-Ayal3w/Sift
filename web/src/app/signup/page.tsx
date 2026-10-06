@@ -34,7 +34,22 @@ function SignupForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await signup({ variables: { input: { companyName, email, password } } });
+      const selected =
+        plan?.toLowerCase() === "starter"
+          ? "STARTER"
+          : plan?.toLowerCase() === "growth"
+            ? "GROWTH"
+            : undefined;
+      await signup({
+        variables: {
+          input: {
+            companyName,
+            email,
+            password,
+            ...(selected ? { plan: selected } : {}),
+          },
+        },
+      });
       router.push("/dashboard");
       router.refresh();
     } catch {

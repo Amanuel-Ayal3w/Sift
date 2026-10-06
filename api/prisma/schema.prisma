@@ -26,6 +26,12 @@ enum LeadStatus {
   ARCHIVED
 }
 
+enum BillingPlan {
+  TRIAL
+  STARTER
+  GROWTH
+}
+
 model Organization {
   id                    String   @id @default(cuid())
   name                  String
@@ -40,6 +46,11 @@ model Organization {
   // write-only from the dashboard and is never returned by GraphQL.
   gmailUser             String?
   gmailAppPassword      String?
+  // Set by a platform admin. Suspended workspaces cannot log in, ingest
+  // leads, or finish qualification.
+  suspendedAt           DateTime?
+  // Listed price used for admin revenue. Trial is the free start.
+  plan                  BillingPlan @default(TRIAL)
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
@@ -59,6 +70,15 @@ model User {
   updatedAt    DateTime @updatedAt
 
   @@index([orgId])
+}
+
+// Operator account for the whole product. Not a member of any workspace.
+model PlatformAdmin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Lead {

@@ -1,6 +1,7 @@
 import type { CookieOptions } from 'express';
 
 export const AUTH_COOKIE_NAME = 'sift_token';
+export const PLATFORM_AUTH_COOKIE_NAME = 'sift_platform_token';
 
 const UNIT_MS: Record<string, number> = {
   s: 1000,

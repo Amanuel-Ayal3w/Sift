@@ -37,11 +37,16 @@ export class LeadQualificationProcessor extends WorkerHost {
         replyTone: true,
         gmailUser: true,
         gmailAppPassword: true,
+        suspendedAt: true,
       },
     });
     if (!org) {
       // The workspace is gone; retrying will never help.
       this.logger.warn(`Dropping lead ${leadId} for unknown org ${orgId}`);
+      return;
+    }
+    if (org.suspendedAt) {
+      this.logger.warn(`Dropping lead ${leadId}; workspace ${orgId} is suspended`);
       return;
     }
 
